@@ -1,0 +1,1 @@
+cmd /c "C:/Program Files/MySQL/MySQL Server 5.0/bin/mysqldump.exe" -u root -proot saodimas > c:/SAODIMAS/backup/saodimasbanco.sql 

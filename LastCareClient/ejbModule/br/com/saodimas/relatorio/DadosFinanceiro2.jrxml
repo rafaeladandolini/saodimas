@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0f24c0ae-dc86-4dd1-82b4-bd5c1f4b01ef">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="42"/>
+	<property name="ireport.y" value="649"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\SAODIMAS\\relatorios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COLECAO_FATURAS" class="java.util.List"/>
+	<field name="numeroContrato" class="java.lang.String"/>
+	<field name="dataAdesao" class="java.sql.Date"/>
+	<field name="telefone" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="titular.nome" class="java.lang.String"/>
+	<field name="titular.CPF" class="java.lang.String"/>
+	<field name="titular.dataNascimento" class="java.sql.Date"/>
+	<field name="cidade.nome" class="java.lang.String"/>
+	<field name="plano.descricao" class="java.lang.String"/>
+	<field name="plano.limiteAssociado" class="java.lang.Integer"/>
+	<field name="plano.carencia" class="java.lang.Integer"/>
+	<field name="plano.mensalidade" class="java.lang.Double"/>
+	<field name="observacao" class="java.lang.String"/>
+	<field name="titular.rg" class="java.lang.String"/>
+	<field name="celular" class="java.lang.String"/>
+	<field name="bairro" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="252">
+			<frame>
+				<reportElement x="2" y="51" width="552" height="185" uuid="93ce724f-bf63-479f-89a8-0a9f91eeb993"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="74" y="114" width="475" height="65" isRemoveLineWhenBlank="true" uuid="f1cfd460-73e3-43f0-a55e-b73f59e73d2f"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{observacao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="8" y="5" width="117" height="13" uuid="45d80961-2e07-4eb5-b279-2e5c5d41da03"/>
+					<textElement>
+						<font fontName="Arial" size="11" isBold="true" isItalic="false"/>
+					</textElement>
+					<text><![CDATA[Dados da Apólice]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="8" y="30" width="41" height="13" uuid="87e57fee-1571-4406-ac03-7e44669284a9"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Apólice:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="276" y="30" width="76" height="13" uuid="cc860815-5f8f-486d-88e9-a079b9e00164"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Data de Adesão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="8" y="79" width="46" height="13" uuid="e78c902d-5ec6-402b-9a4d-dc31f6c03373"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Endereço:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="8" y="96" width="37" height="13" uuid="a2245ef2-ba8f-410d-93b4-d4ae069dd59d"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Cidade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="404" y="96" width="25" height="13" uuid="6c13ad5a-25a8-4be6-b606-af24af7491db"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Tel.:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="431" y="96" width="105" height="13" uuid="7172d957-30d7-453f-8f1a-3889c61f1399"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{telefone}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="358" y="29" width="100" height="13" uuid="1f9ec5af-92a7-4ba0-b1ad-ff87813fe48a"/>
+					<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataAdesao})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="61" y="79" width="195" height="13" uuid="3575a16c-c216-41b0-9480-60a9d439b9ba"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{endereco}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="51" y="29" width="87" height="13" uuid="0f9c2223-dea7-47a9-a726-48c45b2f5ad7"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{numeroContrato}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="51" y="96" width="166" height="13" uuid="ddd07639-ad81-4c78-b553-3e8bac14aa99"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cidade.nome}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="44" y="44" width="224" height="13" uuid="d62b6388-4197-4815-bcb0-8234f3e27a46"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{titular.nome}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="8" y="45" width="33" height="13" uuid="e40477ce-45f7-4e25-81e0-bdfed808a5a8"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Titular:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="276" y="45" width="28" height="13" uuid="1847f3b4-23a7-4eb4-9222-447d35b4e3d8"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[CPF:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="304" y="45" width="132" height="13" uuid="c6c9130d-919a-49bd-8dac-a85f693f7ac4"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{titular.CPF}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="67" y="62" width="100" height="13" uuid="c811f11b-5c13-4282-ba53-280184391a6c"/>
+					<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{titular.dataNascimento})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="7" y="113" width="63" height="13" uuid="f80ae4ef-5800-4b4a-ab14-c9a799b573f4"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Observações:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="8" y="62" width="55" height="13" uuid="5083822d-3017-4ed8-8b5e-ba98ddff66ee"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Data Nasc.:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="298" y="61" width="132" height="13" uuid="5d8c1d2a-ca3f-4a09-8490-27fe51f08955"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{titular.rg}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="276" y="62" width="19" height="13" uuid="6d73caa0-1b2e-4f5d-85e4-bb9a4353067a"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[RG:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="293" y="97" width="105" height="13" uuid="52fa89d0-fb71-4f0f-8157-f1bf39a3225b"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{celular}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="266" y="97" width="25" height="13" uuid="2186baae-73ae-4ade-9248-70e30aee198d"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Cel.:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="276" y="79" width="33" height="13" uuid="55db86cc-d065-4b48-9777-f6d302aa2bef"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Bairro:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="314" y="77" width="144" height="15" uuid="dacb1140-abeb-4e32-8f9d-7c2cb27c5018"/>
+					<textFieldExpression><![CDATA[$F{bairro}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<staticText>
+				<reportElement x="2" y="238" width="181" height="13" uuid="718e2a41-9cde-4114-8325-e312453e7e38"/>
+				<textElement>
+					<font fontName="Arial" size="11" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Faturas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="2" width="555" height="25" uuid="23c78f80-777f-42b0-8f18-1c2c69c49c85"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[São Dimas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="27" width="555" height="20" uuid="562b602b-a77a-4829-b66d-a05153126564"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Plano de Assistência Familar]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="5" width="555" height="20" uuid="d29956a1-7362-49e3-8c69-545f5a8618a4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="319">
+			<subreport>
+				<reportElement x="7" y="3" width="541" height="310" uuid="510cbdf9-a2ae-41ed-8e4e-23c916687fa3"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[new JRBeanCollectionDataSource($P{COLECAO_FATURAS})]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "FaturasApolice.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,815 @@
+package br.com.saodimas.model.dao.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.saodimas.model.beans.ApoliceVO;
+import br.com.saodimas.model.beans.AssociadoVO;
+import br.com.saodimas.model.beans.CidadeVO;
+import br.com.saodimas.model.beans.EmprestimoEquipamentoVO;
+import br.com.saodimas.model.beans.FaturaVO;
+import br.com.saodimas.model.beans.ObitoVO;
+import br.com.saodimas.model.dao.ApoliceDAO;
+import br.com.saodimas.model.dao.AssociadoDAO;
+import br.com.saodimas.model.dao.CidadeDAO;
+import br.com.saodimas.model.dao.ColaboradorDAO;
+import br.com.saodimas.model.dao.ConsultaConstants;
+import br.com.saodimas.model.dao.EmpresaDAO;
+import br.com.saodimas.model.dao.EmprestimoEquipamentoDAO;
+import br.com.saodimas.model.dao.FaturaDAO;
+import br.com.saodimas.model.dao.ObitoDAO;
+import br.com.saodimas.model.dao.PlanoDAO;
+
+public class ApoliceDAOImpl implements ApoliceDAO{
+
+
+	
+	public void delete(ApoliceVO entity, Connection conn) throws SQLException {
+		
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "DELETE FROM APOLICE WHERE ID_APOLICE = ? ";
+			conn.setAutoCommit(false);
+				
+			AssociadoDAO assDAO = new AssociadoDAOImpl();
+			assDAO.deleteAllDependentesByApolice(entity, conn);
+						
+			FaturaDAO faturaDAO = new FaturaDAOImpl();
+			faturaDAO.deleteAllFaturasByApolice(entity, conn);
+			
+			ObitoDAO obitoDAO = new ObitoDAOImpl();
+			obitoDAO.deleteAllObitosByApolice(entity, conn);
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, entity.getId());
+			stmt.executeUpdate();
+						
+			conn.commit();
+			
+			assDAO.deleteTitularByApolice(entity, conn);
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+		}
+	}
+
+	public List<ApoliceVO> findAll(Connection conn) throws SQLException {
+		
+		List<ApoliceVO> list = new ArrayList<ApoliceVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM APOLICE ORDER BY ABS(NUMERO_CONTRATO)";
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				list.add(this.createVOFromResultSet(rs, conn));
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+
+	}
+	
+	public List<ApoliceVO> findAllOrderByCidade(Connection conn) throws SQLException {
+		
+		List<ApoliceVO> list = new ArrayList<ApoliceVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "select * from apolice a, cidade c, associado aso where a.id_cidade = c.id_cidade and a.id_associado = aso.id_associado order by c.nome_cidade, aso.nome";
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				list.add(this.createVOFromResultSet(rs, conn));
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+
+	}
+	
+	public List<ApoliceVO> findByCidadeOrderByCidade(CidadeVO cidade, Connection conn) throws SQLException {
+		
+		List<ApoliceVO> list = new ArrayList<ApoliceVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "select * from apolice a, cidade c, associado aso where c.id_cidade = ? and a.id_cidade = c.id_cidade and a.id_associado = aso.id_associado order by c.nome_cidade, aso.nome";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, cidade.getId());
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+				list.add(this.createVOFromResultSet(rs, conn));
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+
+	}
+
+	public void save(ApoliceVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "INSERT INTO APOLICE" +
+					"(NUMERO_CONTRATO, "+
+					" DATA_ADESAO, "+ 
+					" OBSERVACAO, "+
+					" OBSERVACAOOCULTA, "+
+					" QTDE_CARTEIRINHAS, "+ 
+					" CELULAR, "+
+					" TELEFONE, "+
+					" ENDERECO, "+ 
+					" BAIRRO, "+
+					" CEP, "+
+					" EMAIL, "+
+					" SENHA, "+
+					" LOGIN, "+
+					" STATUS, "+
+					" COMPLEMENTO_ENDERECO, "+
+					" ID_ASSOCIADO, "+ 
+					" ID_CIDADE, ";
+			
+			if(entity.getEmpresa() != null)
+			sql +=	" ID_EMPRESA, ";
+			
+			sql +=	" ID_PLANO, "+
+					" ID_COLABORADOR, "+ 
+					" SIS_ANT_FATURAS, "+ 
+					" SIS_ANT_OBITOS, "+
+					" SIS_ANT_OBS) "+
+					" VALUES (" ;
+			
+			if(entity.getEmpresa() != null)
+			sql += "?,";	
+				 
+				sql += "?,?,?,?," +
+					"?,?,?,?,?," +
+					"?,?,?,?,?," +
+					"?,?,?,?,?,?,?,?)";
+			
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			int i =1;
+			stmt.setString(i++, entity.getNumeroContrato());
+			stmt.setDate(i++, new java.sql.Date(entity.getDataAdesao().getTime()));
+			stmt.setString(i++, entity.getObservacao());
+			stmt.setString(i++, entity.getObservacaoOculta());
+			stmt.setInt(i++, entity.getQuantidadeCarteirinhas());
+			stmt.setString(i++, entity.getCelular());
+			stmt.setString(i++, entity.getTelefone());
+			stmt.setString(i++, entity.getEndereco());
+			stmt.setString(i++, entity.getBairro());
+			stmt.setString(i++, entity.getCep());
+			stmt.setString(i++, entity.getEmail());
+			stmt.setString(i++, entity.getSenha());
+			stmt.setString(i++, entity.getLogin());
+			stmt.setString(i++, entity.getStatus());
+			stmt.setString(i++, entity.getCompEndereco());
+			
+			AssociadoDAO associadoDAO = new AssociadoDAOImpl();
+			associadoDAO.saveTitular(entity.getTitular(), conn);
+			
+			stmt.setInt(i++, entity.getTitular().getId());
+			stmt.setInt(i++, entity.getCidade().getId());
+			
+			if(entity.getEmpresa() != null){
+				EmpresaDAO daoEmpresa = new EmpresaDAOImpl();
+				daoEmpresa.save(entity.getEmpresa(), conn);
+				stmt.setInt(i++, entity.getEmpresa().getId());
+			}
+			
+			stmt.setInt(i++, entity.getPlano().getId());
+			stmt.setInt(i++, entity.getColaborador().getId());
+			stmt.setInt(i++, entity.getFaturasPagasAntigas());
+			stmt.setInt(i++, entity.getObitoOcorridosAntigos());
+			stmt.setString(i++, entity.getObservacaoAntiga());
+			
+			
+			stmt.executeUpdate();
+			conn.commit();
+			
+			entity.setId(this.getIdInserido(conn));
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		
+	}
+
+	public void update(ApoliceVO entity, Connection conn) throws SQLException {
+		
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "UPDATE APOLICE SET" +
+					    " NUMERO_CONTRATO = ?," +
+						" DATA_ADESAO = ?, " +
+						" OBSERVACAO = ?, " +
+						" OBSERVACAOOCULTA = ?, " +
+						" QTDE_CARTEIRINHAS = ?, " +
+						" CELULAR = ?, " +
+						" TELEFONE = ?, " +
+						" ENDERECO = ?, " +
+						" BAIRRO = ?, " +
+						" CEP = ?, " +
+						" EMAIL = ?, " +
+						" SENHA = ?, " +
+						" LOGIN = ?, " +
+						" STATUS = ?, " +
+						" COMPLEMENTO_ENDERECO = ?, " +
+						" ID_ASSOCIADO = ?, " +
+						" ID_CIDADE = ?, ";
+			
+				if(entity.getEmpresa() != null)
+					sql +=" ID_EMPRESA = ?, ";
+				
+			    sql+=	" ID_PLANO = ?, " ;
+				 
+				 if(entity.getColaborador() != null)
+			     	sql +=	" ID_COLABORADOR = ?, " ;
+					
+				 sql += " SIS_ANT_FATURAS = ?, " +
+						" SIS_ANT_OBITOS = ?, " +
+						" SIS_ANT_OBS = ?," +
+						" DATA_SUSPENSAO = ?," +
+						" MOTIVO_SUSPENSAO = ?," +
+						" DATA_CANCELAMENTO = ?," +
+						" MOTIVO_CANCELAMENTO = ?" +
+						" WHERE ID_APOLICE = ?";
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			int i = 1;
+			
+			stmt.setString(i++, entity.getNumeroContrato());
+			stmt.setDate(i++, new java.sql.Date(entity.getDataAdesao().getTime()));
+			stmt.setString(i++, entity.getObservacao());
+			stmt.setString(i++, entity.getObservacaoOculta());
+			stmt.setInt(i++, entity.getQuantidadeCarteirinhas());
+			stmt.setString(i++, entity.getCelular());
+			stmt.setString(i++, entity.getTelefone());
+			stmt.setString(i++, entity.getEndereco());
+			stmt.setString(i++, entity.getBairro());
+			stmt.setString(i++, entity.getCep());
+			stmt.setString(i++, entity.getEmail());
+			stmt.setString(i++, entity.getSenha());
+			stmt.setString(i++, entity.getLogin());
+			stmt.setString(i++, entity.getStatus());
+			stmt.setString(i++, entity.getCompEndereco());
+			stmt.setInt(i++, entity.getTitular().getId());
+			
+			AssociadoDAO associadoDAO = new AssociadoDAOImpl();
+			associadoDAO.update(entity.getTitular(), conn);
+			
+			stmt.setInt(i++, entity.getCidade().getId());
+			if(entity.getEmpresa() != null){
+				EmpresaDAO empresaDAO = new  EmpresaDAOImpl();
+				if(entity.getEmpresa().getId() != null && entity.getEmpresa().getId() > 0)
+					empresaDAO.update(entity.getEmpresa(), conn);
+				else
+					empresaDAO.save(entity.getEmpresa(), conn);
+				
+				stmt.setInt(i++, entity.getEmpresa().getId() > 0 ? entity.getEmpresa().getId() : null );			
+				
+			}
+			
+			stmt.setInt(i++, entity.getPlano().getId());
+			
+			if(entity.getColaborador() != null)
+				stmt.setInt(i++, entity.getColaborador().getId());
+			
+			stmt.setInt(i++, entity.getFaturasPagasAntigas());
+			stmt.setInt(i++, entity.getObitoOcorridosAntigos());
+			stmt.setString(i++, entity.getObservacaoAntiga());
+			stmt.setDate(i++, entity.getDataSuspensao() == null ? null : new java.sql.Date(entity.getDataSuspensao().getTime()));
+			stmt.setString(i++, entity.getMotivoSuspensao());
+			stmt.setDate(i++,entity.getDataCancelamento() == null ? null : new java.sql.Date(entity.getDataCancelamento().getTime()));
+			stmt.setString(i++, entity.getMotivoCancelamento());
+			stmt.setInt(i++,entity.getId());
+			
+			stmt.executeUpdate();
+			conn.commit();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+
+		
+		
+	}
+	
+	private ApoliceVO createVOFromResultSet(ResultSet rs, Connection conn) throws SQLException
+	{
+		ApoliceVO vo = new ApoliceVO();
+		
+		vo.setId(rs.getInt(ApoliceVO.ID_APOLICE));
+		vo.setBairro(rs.getString(ApoliceVO.BAIRRO));
+		vo.setCelular(rs.getString(ApoliceVO.CELULAR));
+		vo.setCep(rs.getString(ApoliceVO.CEP));
+		
+		CidadeDAO cidadeDAO = new CidadeDAOImpl();
+		int id_cidade = rs.getInt(ApoliceVO.ID_CIDADE);
+		vo.setCidade(cidadeDAO.findById(id_cidade, conn));
+		
+		ColaboradorDAO colDAO = new ColaboradorDAOImpl();
+		int id_col = rs.getInt(ApoliceVO.ID_COLABORADOR);
+		vo.setColaborador(colDAO.findById(id_col, conn));
+		
+		vo.setDataAdesao(rs.getDate(ApoliceVO.DATA_ADESAO));
+		
+		AssociadoDAO assDao = new AssociadoDAOImpl();
+		List<AssociadoVO> listDepen = assDao.getAllDependentesByApolice(vo, conn);
+		vo.setDependentes(listDepen);
+		
+		vo.setEmail(rs.getString(ApoliceVO.EMAIL));
+		
+		EmpresaDAO empresaDAo = new EmpresaDAOImpl();
+		int id_empresa = rs.getInt(ApoliceVO.ID_EMPRESA);
+		if(id_empresa > 0)
+			vo.setEmpresa(empresaDAo.findById(id_empresa, conn));
+		
+		vo.setEndereco(rs.getString(ApoliceVO.ENDERECO));
+		
+		FaturaDAO faturaDAO = new FaturaDAOImpl();
+		List<FaturaVO> list = faturaDAO.getAllFaturasByApolice(vo, conn); 
+		vo.setFaturas(list);
+		
+		vo.setFaturasPagasAntigas(rs.getInt(ApoliceVO.SIS_ANT_FATURAS));
+		vo.setLogin(rs.getString(ApoliceVO.LOGIN));
+		vo.setNumeroContrato(rs.getString(ApoliceVO.NUMERO_CONTRATO));
+		vo.setObservacaoOculta(rs.getString(ApoliceVO.OBSERVACAOOCULTA));
+		vo.setQuantidadeCarteirinhas(rs.getInt(ApoliceVO.QTDE_CARTEIRINHAS));
+		
+		ObitoDAO obitoDAO = new ObitoDAOImpl();
+		List<ObitoVO> listObito = obitoDAO.getAllObitosByApolice(vo, conn);
+		vo.setObitos(listObito);
+		
+		vo.setObitoOcorridosAntigos(rs.getInt(ApoliceVO.SIS_ANT_OBITOS));
+		vo.setObservacao(rs.getString(ApoliceVO.OBSERVACAO));
+		vo.setObservacaoAntiga(rs.getString(ApoliceVO.SIS_ANT_OBS));
+		
+		PlanoDAO planoDAO = new PlanoDAOImpl();
+		int id_plano = rs.getInt(ApoliceVO.ID_PLANO);
+		vo.setPlano(planoDAO.findById(id_plano, conn));
+		
+		vo.setSenha(rs.getString(ApoliceVO.SENHA));
+		vo.setStatus(rs.getString(ApoliceVO.STATUS));
+		vo.setCompEndereco(rs.getString(ApoliceVO.COMPLEMENTO_ENDERECO));
+		vo.setTelefone(rs.getString(ApoliceVO.TELEFONE));
+		
+		AssociadoDAO colDao = new AssociadoDAOImpl();
+		int id_ass = rs.getInt(ApoliceVO.ID_ASSOCIADO);
+		vo.setTitular(colDao.findById(id_ass, conn));
+		
+		EmprestimoEquipamentoDAO emDAO = new EmprestimoEquipamentoDAOImpl();
+		List<EmprestimoEquipamentoVO> lisstEm = emDAO.getAllEmpretimoEquipamentoVOByApolice(vo, conn);
+		vo.setEmprestimos(lisstEm);
+
+		List<EmprestimoEquipamentoVO> listDev = emDAO.getAllDevolucoesEquipamentoVOByApolice(vo, conn);
+		vo.setDevolucoes(listDev);
+		
+		vo.setDataCancelamento(rs.getDate(ApoliceVO.DATA_CANCELAMENTO));
+		vo.setDataSuspensao(rs.getDate(ApoliceVO.DATA_SUSPENSAO));
+		vo.setMotivoCancelamento(rs.getString(ApoliceVO.MOTIVO_CANCELAMENTO));
+		vo.setMotivoSuspensao(rs.getString(ApoliceVO.MOTIVO_SUSPENSAO));
+		
+		return vo;
+	}
+
+
+	public ApoliceVO findById(Integer id, Connection conn) throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM APOLICE WHERE ID_APOLICE = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, id);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+				return this.createVOFromResultSet(rs, conn);
+			
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return null;
+	}
+
+	public List<ApoliceVO> consultaApolice(String tipo, String[] parametros,
+			String status, Connection conn) throws SQLException {
+		
+		String sql = " SELECT * FROM APOLICE AP";
+		
+		if(tipo.endsWith(ConsultaConstants.QUALQUER) && status.equals(ConsultaConstants.QUALQUER))
+		{
+			sql = " SELECT * FROM APOLICE AP ";
+		}						
+		else if(tipo.equals(ConsultaConstants.NOME_TITULAR))
+		{
+			sql = " SELECT * FROM APOLICE AP INNER JOIN ASSOCIADO T ON AP.ID_ASSOCIADO = T.ID_ASSOCIADO WHERE T.NOME LIKE '%" + parametros[0] +"%' ";
+
+		}else if(tipo.equals(ConsultaConstants.NOME_DEPENDENTE))
+		{
+			sql = " SELECT * FROM APOLICE AP INNER JOIN ASSOCIADO T ON AP.ID_APOLICE = T.ID_APOLICE WHERE T.NOME LIKE '%" + parametros[0] +"%' ";
+			
+		}else if(tipo.equals(ConsultaConstants.NUMERO))
+		{
+			sql = " SELECT * FROM APOLICE AP WHERE AP.ID_APOLICE = "+ parametros[0];
+			
+		}else if(tipo.equals(ConsultaConstants.ENDERECO))
+		{
+			sql = " SELECT * FROM APOLICE AP WHERE ENDERECO LIKE '%"+ parametros[0] + "%'";
+		}
+		else if(tipo.equals(ConsultaConstants.OBSERVACAO))
+		{
+			sql = " SELECT * FROM APOLICE AP WHERE OBSERVACAO LIKE '%"+ parametros[0] + "%'";
+		}
+		else if(tipo.equals(ConsultaConstants.CONTRATO))
+		{
+			sql = " SELECT * FROM APOLICE AP WHERE AP.NUMERO_CONTRATO = "+ parametros[0];
+		}else if(tipo.equals(ConsultaConstants.DOCUMENTO))
+		{
+			sql = "  SELECT * FROM APOLICE AP, ASSOCIADO T  WHERE T.CPF = "+ parametros[0];
+		}else if(tipo.equals(ConsultaConstants.CIDADE))
+		{
+			sql = "  SELECT * FROM APOLICE AP WHERE AP.ID_CIDADE = "+ parametros[0];
+		}	
+		else if(tipo.equals(ConsultaConstants.PLANO))
+		{
+			sql = "  SELECT * FROM APOLICE AP WHERE AP.ID_PLANO = "+ parametros[0];
+		}	
+		else if(tipo.equals(ConsultaConstants.DATA_ADESAO))
+		{
+			
+				boolean temWhere = false; 
+				if(parametros[0] != null)
+				{
+					sql = " SELECT * FROM APOLICE AP WHERE AP.DATA_ADESAO >= '" + parametros[0] + "'";
+					temWhere = true;
+				}
+				if(parametros[1] != null)
+				{
+					if(!temWhere)
+						sql = " SELECT * FROM APOLICE AP WHERE ";
+					else
+						sql += " AND ";
+					
+					sql += " AP.DATA_ADESAO <= '" + parametros[1] + "'";
+				}
+						
+		}
+		
+		if(!status.equals(ConsultaConstants.QUALQUER))
+		{
+			if(sql.contains(" WHERE "))
+				sql += " AND AP.STATUS = '" + status + "'";
+			else
+				sql = " SELECT * FROM APOLICE AP WHERE AP.STATUS = '" + status + "'";
+		}
+		
+		sql += " ORDER BY ABS(AP.NUMERO_CONTRATO)";
+		
+		List<ApoliceVO> list = new ArrayList<ApoliceVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				ApoliceVO vo = new ApoliceVO();
+				
+				vo.setId(rs.getInt(ApoliceVO.ID_APOLICE));
+				vo.setNumeroContrato(rs.getString(ApoliceVO.NUMERO_CONTRATO));
+				
+				PlanoDAO planoDAO = new PlanoDAOImpl();
+				int id_plano = rs.getInt(ApoliceVO.ID_PLANO);
+				vo.setPlano(planoDAO.findById(id_plano, conn));
+								
+				AssociadoDAO colDao = new AssociadoDAOImpl();
+				int id_ass = rs.getInt(ApoliceVO.ID_ASSOCIADO);
+				vo.setTitular(colDao.findById(id_ass, conn));
+			
+				vo.setDataAdesao(rs.getDate(ApoliceVO.DATA_ADESAO));
+				
+				vo.setEndereco(rs.getString(ApoliceVO.ENDERECO));
+				vo.setBairro(rs.getString(ApoliceVO.BAIRRO));
+				vo.setStatus(rs.getString(ApoliceVO.STATUS));
+				
+				CidadeDAO cidadeDao = new CidadeDAOImpl();
+				int id_cidade = rs.getInt(ApoliceVO.ID_CIDADE);
+				vo.setCidade(cidadeDao.findById(id_cidade, conn));
+						
+				list.add(vo);
+				
+			}
+
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (rs != null)
+				rs.close();
+		}
+	
+		return list;
+	}
+
+	@SuppressWarnings("resource")
+	public Integer getProximoNumContrato(Connection conn) throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT MAX(ID_APOLICE) AS ID_APOLICE FROM APOLICE;";
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			
+			String id = "0";
+			String numero = "0";
+			
+			if(rs.next())
+				id = rs.getString("ID_APOLICE");
+			
+			if(id != null && !id.equals("0")){
+				String sql2 = "SELECT NUMERO_CONTRATO FROM APOLICE WHERE ID_APOLICE = ?";
+				stmt = conn.prepareStatement(sql2);
+				stmt.setInt(1,Integer.parseInt(id));
+				rs = stmt.executeQuery();
+				if(rs.next())
+					numero = rs.getString("NUMERO_CONTRATO");
+			}
+						
+			return Integer.parseInt(numero)+1;
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+	}
+
+	public boolean isNumContratoValido(String num, Connection conn)
+			throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM APOLICE WHERE NUMERO_CONTRATO = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, num);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+				return false;
+			
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return true;
+	}
+
+	public ApoliceVO searchApoliceByNumeroContrato(String numeroContrato,
+			Connection conn) throws SQLException {
+	
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM APOLICE WHERE NUMERO_CONTRATO = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, numeroContrato);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+				return this.createVOFromResultSet(rs, conn);
+			
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return null;
+	}
+
+	private int getIdInserido(Connection conn) throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		String sql = " SELECT @@IDENTITY AS ID FROM APOLICE";
+		
+		stmt = conn.prepareStatement(sql);
+		rs = stmt.executeQuery();
+		
+		int id = 0;
+		while(rs.next())
+			id = rs.getInt("ID");
+		
+		return id;
+			
+		
+	}
+
+	public ApoliceVO carregarApoliceSimples(Integer idApolice, Connection conn)
+			throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		String sql = "SELECT * FROM APOLICE WHERE ID_APOLICE = ?";
+
+		try{
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, idApolice);
+			rs = stmt.executeQuery();
+			
+			if (rs.next()) {
+				ApoliceVO vo = new ApoliceVO();
+				
+				vo.setId(rs.getInt(ApoliceVO.ID_APOLICE));
+				vo.setNumeroContrato(rs.getString(ApoliceVO.NUMERO_CONTRATO));
+				
+				PlanoDAO planoDAO = new PlanoDAOImpl();
+				int id_plano = rs.getInt(ApoliceVO.ID_PLANO);
+				vo.setPlano(planoDAO.findById(id_plano, conn));
+								
+				AssociadoDAO colDao = new AssociadoDAOImpl();
+				int id_ass = rs.getInt(ApoliceVO.ID_ASSOCIADO);
+				vo.setTitular(colDao.findById(id_ass, conn));
+			
+				vo.setDataAdesao(rs.getDate(ApoliceVO.DATA_ADESAO));
+				
+				vo.setObservacao(rs.getString(ApoliceVO.OBSERVACAO));
+				vo.setCelular(rs.getString(ApoliceVO.CELULAR));
+				vo.setTelefone(rs.getString(ApoliceVO.TELEFONE));
+				vo.setEndereco(rs.getString(ApoliceVO.ENDERECO));
+				vo.setBairro(rs.getString(ApoliceVO.BAIRRO));
+				vo.setStatus(rs.getString(ApoliceVO.STATUS));
+				
+				CidadeDAO cidadeDao = new CidadeDAOImpl();
+				int id_cidade = rs.getInt(ApoliceVO.ID_CIDADE);
+				vo.setCidade(cidadeDao.findById(id_cidade, conn));
+						
+				return vo;
+				
+			}
+
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (rs != null)
+				rs.close();
+		}
+		return null;
+		
+	}
+	
+	public void saveComID(ApoliceVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "INSERT INTO APOLICE" +
+					"(ID_APOLICE, NUMERO_CONTRATO, "+
+					" DATA_ADESAO, "+ 
+					" OBSERVACAO, "+ 
+					" OBSERVACAOOCULTA, "+
+					" QTDE_CARTEIRINHAS, "+
+					" CELULAR, "+
+					" TELEFONE, "+
+					" ENDERECO, "+ 
+					" BAIRRO, "+
+					" CEP, "+
+					" EMAIL, "+
+					" SENHA, "+
+					" LOGIN, "+
+					" STATUS, "+
+					" COMPLEMENTO_ENDERECO, "+
+					" ID_ASSOCIADO, "+ 
+					" ID_CIDADE, ";
+			
+			if(entity.getEmpresa() != null)
+			sql +=	" ID_EMPRESA, ";
+			
+			sql +=	" ID_PLANO, "+
+					" ID_COLABORADOR, "+ 
+					" SIS_ANT_FATURAS, "+ 
+					" SIS_ANT_OBITOS, "+
+					" SIS_ANT_OBS) "+
+					" VALUES (" ;
+			
+			if(entity.getEmpresa() != null)
+			sql += "?,";	
+				 
+				sql += "?,?,?,?," +
+					"?,?,?,?,?," +
+					"?,?,?,?,?," +
+					"?,?,?,?,?,?,?,?,?)";
+			
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			int i =1;
+			stmt.setInt(i++, entity.getId());
+			stmt.setString(i++, entity.getNumeroContrato());
+			stmt.setDate(i++, new java.sql.Date(entity.getDataAdesao().getTime()));
+			stmt.setString(i++, entity.getObservacao());
+			stmt.setString(i++, entity.getObservacaoOculta());
+			stmt.setInt(i++, entity.getQuantidadeCarteirinhas());
+			stmt.setString(i++, entity.getCelular());
+			stmt.setString(i++, entity.getTelefone());
+			stmt.setString(i++, entity.getEndereco());
+			stmt.setString(i++, entity.getBairro());
+			stmt.setString(i++, entity.getCep());
+			stmt.setString(i++, entity.getEmail());
+			stmt.setString(i++, entity.getSenha());
+			stmt.setString(i++, entity.getLogin());
+			stmt.setString(i++, entity.getStatus());
+			stmt.setString(i++, entity.getCompEndereco());
+			
+			AssociadoDAO associadoDAO = new AssociadoDAOImpl();
+			associadoDAO.saveTitular(entity.getTitular(), conn);
+			
+			stmt.setInt(i++, entity.getTitular().getId());
+			stmt.setInt(i++, entity.getCidade().getId());
+			
+			if(entity.getEmpresa() != null)
+				stmt.setInt(i++, entity.getEmpresa().getId());
+			
+			stmt.setInt(i++, entity.getPlano().getId());
+						
+			stmt.setInt(i++, entity.getColaborador().getId());
+			stmt.setInt(i++, entity.getFaturasPagasAntigas());
+			stmt.setInt(i++, entity.getObitoOcorridosAntigos());
+			stmt.setString(i++, entity.getObservacaoAntiga());
+			
+			
+			stmt.executeUpdate();
+			conn.commit();
+			
+			entity.setId(this.getIdInserido(conn));
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		
+	}
+
+}

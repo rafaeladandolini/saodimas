@@ -1,0 +1,260 @@
+package br.com.saodimas.view.components.panel.financeiro.compra;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ProdutoCompraVO;
+import br.com.saodimas.model.beans.ProdutoVO;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.table.renderer.SpinnerRenderer;
+import br.com.saodimas.view.components.text.MoedaTextField;
+
+@SuppressWarnings("serial")
+public class SelecaoProdutoCompraPanel extends JPanel {
+	
+	private static final String MENSAGEM_PADRAO = "   (*) Preenchimento obrigatório";
+	
+	private ProdutoCompraVO produtoObito;
+	private BarraNotificacao barNotificacao;
+	
+	private JComboBox cbProdutos;
+	private MoedaTextField txtValorProdutoCusto;
+	//private MoedaTextField txtValorProdutoVenda;
+	private SpinnerRenderer spinnerQuantidade;
+	
+	
+	private JButton btCancelar;
+	private JButton bAdicionar;
+
+	private JLabel lbQuantidade;
+	private JLabel lbProduto;
+	private JLabel lbValorCusto;
+	//private JLabel lbValorVenda;
+	
+	private static final Dimension DLABEL = new Dimension(120,22);
+	private static final Dimension DFIELDM = new Dimension(115,22);
+
+	
+	private DecimalFormat formatter = new DecimalFormat("#0.00");
+	
+	
+	public SelecaoProdutoCompraPanel() {
+		initialize();
+		configure();
+	}
+
+	public ProdutoCompraVO getProduto() {
+		return produtoObito;
+	}
+
+	public void setProduto(ProdutoCompraVO produtoObito) {
+	
+		this.produtoObito = produtoObito;
+		if(produtoObito != null){
+			ProdutoVO prod = produtoObito.getProduto();
+			cbProdutos.setSelectedItem(prod);
+			txtValorProdutoCusto.setText(formatter.format(produtoObito.getValorCusto()));
+			//txtValorProdutoVenda.setText(formatter.format(produtoObito.getValorVenda()));
+			spinnerQuantidade.setValue(produtoObito.getQuantidade());			
+		}else
+		{
+			this.carregarCompoProdutos();
+			txtValorProdutoCusto.setText("");
+			//txtValorProdutoVenda.setText("");
+			spinnerQuantidade.setValue(1);
+			if(cbProdutos.getModel().getSize() > 0)
+				cbProdutos.setSelectedIndex(0);
+		}
+	}
+	
+	
+	public void recarregarTabela() {
+		carregarCompoProdutos();
+	}
+	
+	private void carregarCompoProdutos() {
+		List<ProdutoVO> list = Controller.getInstance().getProdutoAtivos();
+		cbProdutos.removeAllItems();
+		for(ProdutoVO produto : list)
+			cbProdutos.addItem(produto);
+	}
+
+	public void focoPadrao(){
+		cbProdutos.requestFocus();
+	}
+
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+		
+
+		lbProduto = new JLabel("Produto: ", JLabel.RIGHT);
+		lbProduto.setPreferredSize(DLABEL);
+		lbProduto.setMinimumSize(DLABEL);
+		
+		cbProdutos = new JComboBox();
+		//cbProdutos.setPreferredSize(DFIELDM);
+		//cbProdutos.setMinimumSize(DFIELDM);
+				
+		lbValorCusto = new JLabel("Valor Custo: *", JLabel.RIGHT);
+		lbValorCusto.setPreferredSize(DLABEL);
+		lbValorCusto.setMinimumSize(DLABEL);
+		
+		txtValorProdutoCusto = new MoedaTextField();
+		txtValorProdutoCusto.setPreferredSize(DFIELDM);
+		txtValorProdutoCusto.setMinimumSize(DFIELDM);
+		
+		/*lbValorVenda = new JLabel("Valor Venda: *", JLabel.RIGHT);
+		lbValorVenda.setPreferredSize(DLABEL);
+		lbValorVenda.setMinimumSize(DLABEL);
+		
+		txtValorProdutoVenda = new MoedaTextField();
+		txtValorProdutoVenda.setPreferredSize(DFIELDM);
+		txtValorProdutoVenda.setMinimumSize(DFIELDM);*/
+		
+		lbQuantidade = new JLabel("Quantidade: *", JLabel.RIGHT);
+		lbQuantidade.setPreferredSize(DLABEL);
+		lbQuantidade.setMinimumSize(DLABEL);
+		
+		spinnerQuantidade = new SpinnerRenderer();
+		spinnerQuantidade.setValue(1);
+		
+		btCancelar = new JButton("Cancelar", new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+
+		bAdicionar = new JButton("Adicionar", new ImageIcon("imagens/save.gif"));
+		bAdicionar.addActionListener(new EventoBotaoControle());
+		bAdicionar.setHorizontalAlignment(JButton.LEFT);
+	}
+
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infProduto = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+		c.gridy = 0; infProduto.add(lbProduto, c);
+		c.gridy = 1; infProduto.add(lbValorCusto, c);
+		//c.gridy = 2; infProduto.add(lbValorVenda, c);
+		c.gridy = 3; infProduto.add(lbQuantidade, c);
+	
+
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		//c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridy = 0; infProduto.add(cbProdutos, c);
+		c.fill = GridBagConstraints.NONE;
+		c.gridy = 1; infProduto.add(txtValorProdutoCusto, c);
+		//c.gridy = 2; infProduto.add(txtValorProdutoVenda, c);
+		c.weighty = 1;
+		c.gridy = 3; infProduto.add(spinnerQuantidade, c);
+	
+
+		infProduto.setBorder(BorderFactory.createTitledBorder("Produto"));
+		adicionarAtalhosComandos(infProduto);
+
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(bAdicionar);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+		
+
+		JPanel panelColaborador = new JPanel(new BorderLayout());
+		panelColaborador.add(barNotificacao, BorderLayout.NORTH);
+		panelColaborador.add(infProduto, BorderLayout.CENTER);
+		panelColaborador.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelColaborador);
+
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelColaborador);
+		adicionarAtalhosComandos(formPrincipal);
+
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+	}
+
+	private void adicionarAtalhosComandos(JPanel panel){
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter(){
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) bAdicionar.doClick();
+					else super.keyPressed(e);
+				}
+			});
+		}
+	}
+
+	private Component getPainelPrincipal(){
+		Component c = getParent();
+		while (c != null){
+			if (c.getClass() == CompraMainPanel.class)  return c;
+			c = c.getParent();
+		}
+		return c;
+	}	
+
+	private class EventoBotaoControle implements ActionListener {
+		
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == btCancelar) {
+				Component c = getPainelPrincipal();
+				try {
+					if (c.getClass() == CompraMainPanel.class)
+						((CompraMainPanel) c).getIFrameCompraProduto().setVisible(false);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+
+			if (e.getSource() == bAdicionar) {
+				Component c = getPainelPrincipal();
+				ProdutoVO produtoSelecionado = (ProdutoVO) cbProdutos.getSelectedItem();
+
+				ProdutoCompraVO produtoAdicionar = new ProdutoCompraVO();
+				produtoAdicionar.setId(produtoObito != null ? produtoObito.getId() : null);
+				produtoAdicionar.setProduto(produtoSelecionado);
+				produtoAdicionar.setQuantidade((Integer) spinnerQuantidade.getValue());
+				produtoAdicionar.setValorCusto(txtValorProdutoCusto.getValor());
+				//produtoAdicionar.setValorVenda(txtValorProdutoVenda.getValor());
+
+				try {
+					if (c.getClass() == CompraMainPanel.class) {
+						((CompraMainPanel) c).getIFrameCompra().adicionarProduto(produtoAdicionar);
+						((CompraMainPanel) c).getIFrameCompraProduto().setVisible(false);
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+
+			}
+		}
+	}
+}	

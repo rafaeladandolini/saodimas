@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_151" class="java.beans.XMLDecoder">
+ <object class="br.com.saodimas.principal.SaoDimasSettings">
+  <void property="conexaoBancoDados">
+   <string>jdbc:mysql://SAODIMAS-PC:3306/saodimas</string>
+  </void>
+  <void property="ultimoLogin">
+   <string>rafaela</string>
+  </void>
+ </object>
+</java>

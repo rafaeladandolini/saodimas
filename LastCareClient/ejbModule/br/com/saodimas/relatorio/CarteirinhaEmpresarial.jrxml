@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="208" pageHeight="1000" columnWidth="180" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" uuid="6d5f8d6a-20a6-453a-9715-bed91fe3bcce">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\SAODIMAS\\relatorios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DEPENDENTES" class="java.lang.String"/>
+	<parameter name="VALIDADE" class="java.lang.String"/>
+	<parameter name="CIDADE" class="java.lang.String"/>
+	<parameter name="PLANO" class="java.lang.String"/>
+	<parameter name="NUMERO_CONTRATO" class="java.lang.String"/>
+	<parameter name="EMPRESA" class="java.lang.String"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="CPF" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="5"/>
+	</pageHeader>
+	<detail>
+		<band height="78">
+			<rectangle>
+				<reportElement x="0" y="2" width="180" height="73" forecolor="#CCCCCC" uuid="239ddd63-c76e-4467-8af6-b277525eedfd"/>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="22" width="37" height="15" uuid="a6a98fb2-166d-4b92-9ad1-49618795c1b2"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Calibri" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Nome: "]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="22" width="134" height="15" uuid="02f39716-7a53-4ec4-a1d0-98dda5a830af"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Calibri" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="4" width="86" height="15" uuid="f105229a-e058-4a11-968d-6a1bb888119a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Calibri" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Apólice: "+ $P{NUMERO_CONTRATO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="89" y="4" width="85" height="15" backcolor="#CCCCCC" uuid="83b8cafc-ee14-44a6-8911-3245421b48c4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Calibri" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Plano: " + $P{PLANO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="62" width="171" height="10" uuid="a6964fab-1835-4475-ad78-9bd7f3d8f72a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{EMPRESA}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="4" y="38" width="170" height="10" uuid="5d314d4b-5f94-4d62-a990-1cc7d32bd12a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CPF:" + $F{CPF}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

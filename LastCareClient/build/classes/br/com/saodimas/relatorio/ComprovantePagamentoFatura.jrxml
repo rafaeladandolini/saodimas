@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Faturas" pageWidth="600" pageHeight="842" columnWidth="600" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="7b3b008a-c66e-4c8b-8bbb-7fdd257f3268">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="apolice.numeroContrato" class="java.lang.String"/>
+	<field name="numeroFatura" class="java.lang.Integer"/>
+	<field name="dataVencimento" class="java.sql.Date"/>
+	<field name="apolice.cidade.nome" class="java.lang.String"/>
+	<field name="apolice.titular.nome" class="java.lang.String"/>
+	<field name="valor" class="java.lang.Double"/>
+	<field name="valorDesconto" class="java.lang.Double"/>
+	<field name="valorMulta" class="java.lang.Double"/>
+	<field name="apolice.empresa" class="java.lang.Object"/>
+	<field name="apolice.empresa.razaoSocial" class="java.lang.String"/>
+	<field name="dataPagamento" class="java.sql.Date"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="209" splitType="Stretch">
+			<frame>
+				<reportElement x="21" y="12" width="250" height="188" uuid="42ac820c-f50e-4161-9822-b55086faa782"/>
+				<rectangle radius="10">
+					<reportElement x="0" y="2" width="250" height="184" uuid="4bddaa57-762d-4569-845c-e7f649190b89"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="0" y="3" width="250" height="29" uuid="9869196d-b603-4f6a-b930-fc3ef4a7000b"/>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font fontName="Arial" size="19" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SÃO DIMAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="33" width="250" height="18" uuid="30b5329d-e00f-41cb-b204-0faf2f0c649a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="11" isBold="false"/>
+					</textElement>
+					<text><![CDATA[PLANO DE ASSISTÊNCIA FAMILIAR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="51" width="117" height="15" uuid="84da8544-3054-4492-a7ce-75c7b94fd717"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Fone: (44) 3453-1377 - 24hrs]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="67" width="250" height="1" backcolor="#000000" uuid="8f66fdeb-bfb8-44d1-847d-88fa946dd4bc"/>
+				</line>
+				<textField>
+					<reportElement x="0" y="67" width="250" height="20" uuid="a9b20e7c-3638-4ad8-8d57-c9c89378b467"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{apolice.empresa} != null ? $F{apolice.empresa.razaoSocial} : $F{apolice.titular.nome})]]></textFieldExpression>
+				</textField>
+				<rectangle radius="3">
+					<reportElement x="140" y="90" width="104" height="13" uuid="ced387ca-a058-4146-8d00-313b17c414be"/>
+				</rectangle>
+				<rectangle radius="3">
+					<reportElement x="140" y="105" width="104" height="13" uuid="a1756775-59aa-4346-a258-e9ecb8537b96"/>
+				</rectangle>
+				<rectangle radius="3">
+					<reportElement x="140" y="120" width="104" height="13" uuid="8a394c0d-fab4-4c8e-82d3-e4079c87720c"/>
+				</rectangle>
+				<rectangle radius="3">
+					<reportElement x="140" y="135" width="104" height="13" uuid="1a5d3819-f6ee-4f55-83b5-ebb0c075884b"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="134" width="131" height="13" uuid="44c34816-5458-428c-b711-5d8069a5c77e"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Pagamento..........................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="120" width="131" height="13" uuid="b4bd62a4-e198-42e0-a170-81be6de45b30"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Valor....................................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="105" width="131" height="13" uuid="354e3b9c-3c5d-4c33-bc02-537804d96ba6"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Vencimento ........................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="7" y="90" width="131" height="13" uuid="f8816ff4-6b47-4262-8b84-9a62f64a93cc"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Apólice/Fatura ...................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="90" width="5" height="13" uuid="fe977282-afca-471b-ae5f-387fe9bdb5c3"/>
+					<textElement>
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[/]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="140" y="105" width="99" height="13" uuid="cc40c4c6-1718-4460-8264-e7acf4502c00"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataVencimento})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="162" y="120" width="82" height="13" uuid="d58a8383-0934-4045-bafb-250377d23ee1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,###,##0.00").format(($F{valor}+$F{valorMulta})-$F{valorDesconto})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="198" y="90" width="40" height="13" uuid="b4be11bf-bf52-4430-aa1d-56b1eb39cb8e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{numeroFatura}.toString()]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="119" y="51" width="131" height="15" uuid="e65960f8-57e9-4e5c-881d-d149043d4890"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{apolice.cidade.nome}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="144" y="90" width="45" height="13" uuid="a688d572-f893-4395-be6b-aa7ae5d23ec6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{apolice.numeroContrato}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="142" y="121" width="21" height="13" uuid="866b2fa3-a92e-4530-8322-963d83661978"/>
+					<textElement>
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[R$:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="144" y="134" width="99" height="13" uuid="388ba8f2-76a2-40b2-ae53-f7dcc03fef63"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataPagamento})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="172" width="250" height="15" uuid="f7ec63b7-b697-40cb-addf-d867211eb910"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[1ª Via - Cliente]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="152" width="250" height="20" uuid="d7f60d02-fb75-490b-bcbd-c8011363b1f0"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA["Comprovante de pagamento sem carne"]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="572" y="208" width="5" height="1" uuid="5e2c9240-09cf-4f24-a1f1-ca80ac438664"/>
+			</line>
+			<line>
+				<reportElement x="21" y="208" width="5" height="1" uuid="eaae8183-f1a8-4f5e-8d7a-be8ae977ed49"/>
+			</line>
+			<frame>
+				<reportElement x="307" y="12" width="250" height="188" uuid="e4efb730-944f-413d-a0aa-d283f102d4b8"/>
+				<rectangle radius="10">
+					<reportElement x="0" y="2" width="250" height="184" uuid="8d2fca4f-6527-4e66-87d5-09ce6bf3d129"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="0" y="3" width="250" height="29" uuid="ff1dba40-1648-4755-a480-47ac16ddbc9d"/>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font fontName="Arial" size="19" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SÃO DIMAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="33" width="250" height="18" uuid="20a84292-2b2a-43d2-8aab-431214ec7047"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="11" isBold="false"/>
+					</textElement>
+					<text><![CDATA[PLANO DE ASSISTÊNCIA FAMILIAR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="51" width="117" height="15" uuid="3c386d54-501e-431d-9bcf-e1636e330bbb"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Fone: (44) 3453-1377 - 24hrs]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="67" width="250" height="1" backcolor="#000000" uuid="267003ca-fe09-4dad-82f4-918a0a7acd16"/>
+				</line>
+				<textField>
+					<reportElement x="0" y="67" width="250" height="20" uuid="dd231adc-e402-45b6-b7b2-90b63fed5d75"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( $F{apolice.empresa} != null ? $F{apolice.empresa.razaoSocial} : $F{apolice.titular.nome})]]></textFieldExpression>
+				</textField>
+				<rectangle radius="3">
+					<reportElement x="140" y="90" width="104" height="13" uuid="c1d35948-67d2-417c-b292-c226860044d6"/>
+				</rectangle>
+				<rectangle radius="3">
+					<reportElement x="140" y="105" width="104" height="13" uuid="32105430-9441-4c01-9b33-c2f88aa5e726"/>
+				</rectangle>
+				<rectangle radius="3">
+					<reportElement x="140" y="120" width="104" height="13" uuid="6ca05194-1607-4eca-b0a6-f95fed33e22a"/>
+				</rectangle>
+				<rectangle radius="3">
+					<reportElement x="140" y="135" width="104" height="13" uuid="beb15070-56eb-456a-9189-fe62c19fa36b"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="134" width="131" height="13" uuid="becaf9e9-584b-43b0-b798-847ac8f31770"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Pagamento..........................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="120" width="131" height="13" uuid="e31fac31-1a83-4e2f-a9f9-5da0b183911b"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Valor....................................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="105" width="131" height="13" uuid="9c6b27b0-e5d7-4c11-bb9b-42c6b1e683bf"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Vencimento ........................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="7" y="90" width="131" height="13" uuid="0d93d2e2-22fd-4e20-b5e8-574d4cc176d1"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Apólice/Fatura ...................:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="90" width="5" height="13" uuid="0b6f03af-720d-4f3f-a6d2-b8bb566cd0fa"/>
+					<textElement>
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[/]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="140" y="105" width="99" height="13" uuid="141915fc-f5fb-4f20-8a8e-a954847c2f65"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataVencimento})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="162" y="120" width="82" height="13" uuid="2881b93d-32e1-4476-af9a-eec4a2e2d161"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new DecimalFormat("#,###,##0.00").format(($F{valor}+$F{valorMulta})-$F{valorDesconto})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="198" y="90" width="40" height="13" uuid="0e8426d8-125c-4674-8a3c-016f10b88947"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{numeroFatura}.toString()]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="119" y="51" width="131" height="15" uuid="acf7b7cb-0bda-450a-81e4-2ab81bda9e8c"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{apolice.cidade.nome}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="144" y="90" width="45" height="13" uuid="0f3866d7-02e1-4726-b429-82ae844c8337"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{apolice.numeroContrato}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="142" y="121" width="21" height="13" uuid="a5decab2-cf14-4988-8df5-f1817f0b47b5"/>
+					<textElement>
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<text><![CDATA[R$:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="144" y="134" width="99" height="13" uuid="887af783-ec09-491e-a06b-58e0d526f737"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataPagamento})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="172" width="250" height="15" uuid="04cbdd4d-bbcb-49a6-9829-9b713d91cb43"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[2ª Via - Escritório]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="153" width="250" height="20" uuid="6217373a-6e60-4a4b-97d7-4c0a70b523ea"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA["Comprovante de pagamento sem carne"]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

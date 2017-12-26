@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DependentesApolice" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="50e9cb9f-0011-4b78-9008-874c0ce3498c">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="numeroFatura" class="java.lang.Integer"/>
+	<field name="dataVencimento" class="java.sql.Date"/>
+	<field name="dataPagamento" class="java.sql.Date"/>
+	<field name="valor" class="java.lang.Double"/>
+	<field name="valorDesconto" class="java.lang.Double"/>
+	<field name="valorMulta" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<staticText>
+				<reportElement x="13" y="3" width="53" height="15" uuid="7dc4d667-c73d-48c7-bd6c-17fe31a8e652"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fatura]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="77" y="3" width="100" height="15" uuid="9b2a46c9-bdb2-45c0-9b39-7da64b765c5c"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data Vencimento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="191" y="3" width="100" height="15" uuid="2d6d25a1-eaad-4d52-9486-84f9cca1577d"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data Pagamento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="305" y="3" width="36" height="15" uuid="11b55450-8228-48fc-b416-449d514f0ba5"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="489" y="3" width="53" height="15" uuid="0595da75-f2de-4091-a151-e5ef0559e9f5"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="3" width="59" height="15" uuid="30463230-e678-4771-8372-a7ccc3b3ecda"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor Multa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="425" y="3" width="48" height="15" uuid="0ddfb4ba-dbb7-43ac-81a8-876ac51bca85"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desc.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="77" y="4" width="100" height="13" uuid="2ce867e5-4228-499b-9a57-02b9fd22169e"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataVencimento})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="191" y="4" width="100" height="13" uuid="e626c41c-d050-4e31-8a6d-61e7cc8c447c"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataPagamento})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="489" y="4" width="53" height="13" uuid="3ba8a6e4-6e0e-4ea2-b230-9b56ac07cf9a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{dataPagamento} != null ? new DecimalFormat("#0.00").format($F{valor}-$F{valorDesconto}+$F{valorMulta} ) : "0,00"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="305" y="4" width="36" height="13" uuid="b0548c85-91a6-4b05-b787-386714a1267d"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new DecimalFormat("#,###,##0.00").format($F{valor})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement x="13" y="4" width="53" height="13" uuid="c1a36b1e-0a34-4c13-897b-d7234bfa1caa"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{numeroFatura}.toString()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="354" y="4" width="59" height="13" uuid="f606f203-ed61-485a-94e3-9cb2183a9950"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{valorDesconto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="4" width="48" height="13" uuid="b2dd6578-b2b8-48d3-8525-c5cf4726455a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{valorDesconto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

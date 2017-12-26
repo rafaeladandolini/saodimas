@@ -1,0 +1,150 @@
+package br.com.saodimas.model.dao.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.saodimas.model.beans.GrupoTrabalhoVO;
+import br.com.saodimas.model.dao.GrupoTrabalhoDAO;
+
+public class GrupoTrabalhoDAOImpl implements GrupoTrabalhoDAO{
+
+	
+
+	public void delete(GrupoTrabalhoVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "DELETE FROM GRUPO_TRABALHO WHERE ID_GRUPO_TRABALHO = ? ";
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, entity.getId());
+			stmt.executeUpdate();
+			conn.commit();
+		}finally{
+			if(stmt != null)
+				stmt.close();
+		}
+		
+	}
+
+	public List<GrupoTrabalhoVO> findAll(Connection conn) throws SQLException {
+		
+		List<GrupoTrabalhoVO> list = new ArrayList<GrupoTrabalhoVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM GRUPO_TRABALHO ORDER BY NOME_GRUPO";
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				list.add(this.createVOFromResultSet(rs));
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+
+	}
+
+	public void save(GrupoTrabalhoVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "INSERT INTO GRUPO_TRABALHO" +
+					"( NOME_GRUPO )" +
+					" VALUES (??)";
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setString(1,entity.getNomeGrupo());
+				
+			
+			stmt.executeUpdate();
+			conn.commit();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		
+	}
+
+	public void update(GrupoTrabalhoVO entity, Connection conn) throws SQLException {
+		
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "UPDATE GRUPO_TRABALHO SET NOME_GRUPO = ?" +
+						" WHERE ID_GRUPO_TRABALHO = ?";
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setString(1,entity.getNomeGrupo());
+			stmt.setInt(8,entity.getId());
+			
+			stmt.executeUpdate();
+			conn.commit();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		
+
+		
+	}
+	
+	private GrupoTrabalhoVO createVOFromResultSet(ResultSet rs) throws SQLException
+	{
+		GrupoTrabalhoVO vo = new GrupoTrabalhoVO();
+		
+		vo.setId(rs.getInt(GrupoTrabalhoVO.ID_GRUPO_TRABALHO));
+		vo.setNomeGrupo(rs.getString(GrupoTrabalhoVO.NOME_GRUPO));
+		
+			
+		return vo;
+	}
+
+
+	public GrupoTrabalhoVO findById(Integer id, Connection conn) throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM GRUPO_TRABALHO WHERE ID_GRUPO_TRABALHO = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1,id);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				return this.createVOFromResultSet(rs);
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return null;
+	}
+	
+
+
+
+			
+}

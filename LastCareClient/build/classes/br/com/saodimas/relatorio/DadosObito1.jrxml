@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7fab378a-0f4e-47eb-b30e-4f761f605047">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="COLECAO_PRODUTOS" class="java.util.List"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\SAODIMAS\\relatorios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COLECAO_SERVICOS" class="java.util.List"/>
+	<field name="apolice.numeroContrato" class="java.lang.String"/>
+	<field name="apolice.dataAdesao" class="java.sql.Date"/>
+	<field name="apolice.telefone" class="java.lang.String"/>
+	<field name="apolice.endereco" class="java.lang.String"/>
+	<field name="apolice.titular.nome" class="java.lang.String"/>
+	<field name="apolice.cidade.nome" class="java.lang.String"/>
+	<field name="apolice.plano.descricao" class="java.lang.String"/>
+	<field name="associado.nome" class="java.lang.String"/>
+	<field name="numeroAtestado" class="java.lang.String"/>
+	<field name="data" class="java.sql.Date"/>
+	<field name="causa" class="java.lang.String"/>
+	<field name="dataExpedicao" class="java.sql.Date"/>
+	<field name="produtos" class="java.lang.Object"/>
+	<field name="apolice.titular.CPF" class="java.lang.String"/>
+	<field name="apolice.celular" class="java.lang.String"/>
+	<field name="apolice.observacao" class="java.lang.String"/>
+	<field name="apolice.titular.rg" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="55">
+			<staticText>
+				<reportElement x="3" y="4" width="555" height="25" uuid="70b10e5f-fd92-4df8-ad86-db676b46e864"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Verdana" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUNERÁRIA SÃO DIMAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="33" width="555" height="20" uuid="70a127c8-8af3-4553-b07f-0f90b5a3dba5"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Verdana" size="12" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[BOLETIM DE SERVIÇO]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="410" y="-20" width="103" height="20" uuid="9bc08baf-0491-43ff-9914-c60cbf89e670"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="226">
+			<staticText>
+				<reportElement x="13" y="206" width="15" height="20" uuid="147ddd07-1f1c-4839-85d1-8840ff1087ee"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Nº:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="31" y="206" width="100" height="20" uuid="fedcc971-082a-4052-ad13-984dadd7d502"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{apolice.numeroContrato}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="133" y="206" width="40" height="20" uuid="16e8e1d2-f977-434f-9920-f82720ef852f"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Plano: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="173" y="206" width="100" height="20" uuid="3546dc3b-0e5f-4c2e-aabc-c0abd0b62c19"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{apolice.plano.descricao}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="274" y="206" width="68" height="20" uuid="c8833ec8-7cca-4f7f-bb55-3e33e65d3cee"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Data Adesão:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="344" y="206" width="52" height="20" uuid="26fb25f8-1882-4af5-8d2f-5543cf16142b"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="10" width="45" height="20" uuid="ff5723bc-20b1-40af-bec3-1c231a640bd0"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[NOME:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="58" y="10" width="485" height="20" uuid="a36d3870-987d-44af-9432-a092291f008a"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{associado.nome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="30" width="118" height="20" uuid="342ee155-9ae5-425c-b3b8-6b54ae72b82c"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[DATA FALECIMENTO:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="132" y="30" width="100" height="20" uuid="2bfff66b-eee9-44bb-b9bc-00adde640752"/>
+				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="409">
+			<subreport>
+				<reportElement x="3" y="3" width="552" height="215" isRemoveLineWhenBlank="true" uuid="cf7b85f1-586e-45cf-8147-4b990c8afa5b"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[new JRBeanCollectionDataSource($P{COLECAO_PRODUTOS})]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new JRBeanCollectionDataSource($P{COLECAO_PRODUTOS})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DadosObito_SubProdutos.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="3" y="221" width="552" height="129" uuid="2f8d100b-cf6b-441f-9570-f02c28d9b666"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[new JRBeanCollectionDataSource($P{COLECAO_PRODUTOS})]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new JRBeanCollectionDataSource($P{COLECAO_SERVICOS})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DadosObito_SubServicos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="32">
+			<line>
+				<reportElement x="45" y="11" width="175" height="1" uuid="e153f895-aff9-44b3-a77a-246f843d4b9d"/>
+			</line>
+			<line>
+				<reportElement x="311" y="10" width="175" height="1" uuid="03cf6ec5-c665-4d8c-b7c9-13534743ee86"/>
+			</line>
+		</band>
+	</pageFooter>
+</jasperReport>

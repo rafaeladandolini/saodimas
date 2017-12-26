@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="DependentesApolice" pageWidth="538" pageHeight="842" columnWidth="538" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="41bcbf10-eb91-4284-aa0c-78fdb0532ce7">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="dataNascimento" class="java.sql.Date"/>
+	<field name="relacao.descricao" class="java.lang.String"/>
+	<field name="CPF" class="java.lang.String"/>
+	<field name="dataAdesao" class="java.util.Date"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="5" y="1" width="163" height="15" uuid="25fbfc44-72fd-48c1-9d1b-94dcc2556a00"/>
+				<textElement>
+					<font fontName="Calibri" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[NOME ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="183" y="1" width="88" height="15" uuid="8bf84080-ceaf-4e9c-a6b3-5b528d5972b6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[DATA NASCIMENTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="284" y="1" width="88" height="15" uuid="c8b345ba-4b9b-4824-a2ce-25729b0cf1b2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[CPF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="378" y="1" width="65" height="15" uuid="ca6d8455-bbea-4d31-97f7-21a8e1a59ed4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[RELAÇÃO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="448" y="1" width="85" height="15" uuid="4a24bc31-329a-4bed-a574-5d334d866905"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[DATA INCLUSÃO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="2" width="165" height="13" uuid="4b61db39-c212-4f02-92c3-9d7103192964"/>
+				<textElement>
+					<font fontName="Calibri" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="183" y="2" width="89" height="13" uuid="62bcc234-62e3-4f50-9404-2cf4f555fe25"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataNascimento})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="284" y="2" width="88" height="13" uuid="e3f56895-a91e-48de-930a-1909e1e69efe"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CPF}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="378" y="2" width="65" height="13" uuid="24116272-5c9d-42ef-87e6-81c6a8b730bd"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{relacao.descricao}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="448" y="2" width="85" height="13" uuid="d49223ca-0fc6-40a0-8169-61c10c51f8ac"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataAdesao})]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="38">
+			<staticText>
+				<reportElement x="14" y="26" width="515" height="12" uuid="6423b6ee-4b8c-4574-91aa-eba8cc4f5e23"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[* Para os assegurados que não tem a data de inclusão informada no sistema.: é considerada a data de adesão ao plano como a data de inclusão.]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

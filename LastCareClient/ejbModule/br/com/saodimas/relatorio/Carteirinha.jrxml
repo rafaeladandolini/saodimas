@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" columnCount="4" pageWidth="226" pageHeight="935" orientation="Landscape" columnWidth="56" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="504ad7c8-1fca-4a4b-80fa-3cef28c700db">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\SAODIMAS\\relatorios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DEPENDENTES" class="java.lang.String"/>
+	<parameter name="VALIDADE" class="java.lang.String"/>
+	<field name="numeroContrato" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="titular.nome" class="java.lang.String"/>
+	<field name="titular.CPF" class="java.lang.String"/>
+	<field name="cidade.nome" class="java.lang.String"/>
+	<field name="plano.descricao" class="java.lang.String"/>
+	<field name="bairro" class="java.lang.String"/>
+	<detail>
+		<band height="155">
+			<rectangle radius="3">
+				<reportElement x="13" y="45" width="196" height="106" forecolor="#CCCCCC" uuid="daa34136-d683-4e7c-987c-58e9f6dcb2e2"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="14" y="21" width="196" height="10" uuid="b66aaed3-d6d1-494f-8853-13f55e19a9a3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["End.:" + $F{endereco} + ", Bairro:" +$F{bairro}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="14" y="8" width="196" height="13" backcolor="#CCCCCC" uuid="31e93d7d-a801-4fce-b0b6-95d042c4e465"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Apolice:" + $F{numeroContrato} + "    Plano:" + $F{plano.descricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="15" y="30" width="194" height="10" uuid="d06219a6-fb2b-498c-b76f-ddb5b4109658"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Calibri" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cidade.nome}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="16" y="49" width="190" height="98" uuid="5d7f81a3-f1e6-43ee-92e1-d6a0fb99bec8"/>
+				<textElement textAlignment="Justified">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DEPENDENTES}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

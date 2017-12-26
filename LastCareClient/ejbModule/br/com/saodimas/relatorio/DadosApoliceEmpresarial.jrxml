@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\SAODIMAS\\relatorios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COLECAO_DEPENDENTES" class="java.util.List"/>
+	<field name="numeroContrato" class="java.lang.String"/>
+	<field name="dataAdesao" class="java.sql.Date"/>
+	<field name="telefone" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="cidade.nome" class="java.lang.String"/>
+	<field name="plano.descricao" class="java.lang.String"/>
+	<field name="observacao" class="java.lang.String"/>
+	<field name="celular" class="java.lang.String"/>
+	<field name="bairro" class="java.lang.String"/>
+	<field name="status" class="java.lang.String"/>
+	<field name="cep" class="java.lang.String"/>
+	<field name="empresa.razaoSocial" class="java.lang.String"/>
+	<field name="empresa.docCNPJ" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="53">
+			<staticText>
+				<reportElement x="0" y="2" width="555" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial" size="20" isBold="true"/>
+				</textElement>
+				<text><![CDATA[São Dimas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="27" width="555" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Plano de Assistência Familar]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="5" width="555" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="562">
+			<subreport>
+				<reportElement x="0" y="216" width="555" height="346"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="REPORT_DATA_SOURCE">
+					<subreportParameterExpression><![CDATA[new JRBeanCollectionDataSource($P{COLECAO_DEPENDENTES})]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[new JRBeanCollectionDataSource($P{COLECAO_DEPENDENTES})]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "DependentesApolice.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="1" y="187" width="181" height="18"/>
+				<textElement>
+					<font fontName="Arial" size="13" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Assegurados]]></text>
+			</staticText>
+			<elementGroup>
+				<rectangle radius="3">
+					<reportElement x="11" y="29" width="106" height="14" forecolor="#CCCCCC"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="0" y="0" width="117" height="17"/>
+					<textElement>
+						<font fontName="Arial" size="13" isBold="true" isItalic="false"/>
+					</textElement>
+					<text><![CDATA[Dados da Apólice]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="30" width="41" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Apólice:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="241" y="29" width="76" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Data de Adesão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="63" width="46" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Endereço:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="82" width="37" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Cidade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="101" width="25" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Tel.:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="36" y="101" width="105" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{telefone}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="320" y="29" width="100" height="13"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dataAdesao})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="69" y="64" width="214" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{endereco}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="61" y="30" width="56" height="13" backcolor="#CCCCCC"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{numeroContrato}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="57" y="82" width="184" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{cidade.nome}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="85" y="47" width="182" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{empresa.razaoSocial}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="16" y="47" width="66" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Razao Social:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="304" y="48" width="28" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="338" y="49" width="132" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{empresa.docCNPJ}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="15" y="118" width="63" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Observações:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="161" y="101" width="25" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Cel.:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="183" y="101" width="105" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{celular}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="82" y="118" width="453" height="54"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{observacao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="133" y="30" width="31" height="13"/>
+					<textElement/>
+					<text><![CDATA[Plano:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="167" y="30" width="47" height="13"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{plano.descricao}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="343" y="63" width="176" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{bairro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="303" y="64" width="37" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Bairro:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="474" y="29" width="70" height="13"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="428" y="29" width="43" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[Situação:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="343" y="82" width="176" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{cep}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="303" y="82" width="37" height="13"/>
+					<textElement>
+						<font fontName="Arial"/>
+					</textElement>
+					<text><![CDATA[CEP:]]></text>
+				</staticText>
+			</elementGroup>
+		</band>
+	</pageHeader>
+</jasperReport>

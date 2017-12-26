@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="29"/>
+	<property name="ireport.y" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<field name="apolice.numeroContrato" class="java.lang.String"/>
+	<field name="numeroFatura" class="java.lang.String"/>
+	<field name="valor" class="java.lang.Double"/>
+	<field name="valorDesconto" class="java.lang.Double"/>
+	<field name="valorMulta" class="java.lang.Double"/>
+	<field name="valorParceiro" class="java.lang.Double"/>
+	<field name="dataPagamento" class="java.util.Date"/>
+	<field name="parceiro.descricao" class="java.lang.String"/>
+	<field name="colaborador.nome" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="47">
+			<staticText>
+				<reportElement x="0" y="0" width="802" height="34"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Comic Sans MS" size="19" isBold="true"/>
+				</textElement>
+				<text><![CDATA[São Dimas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="34" width="802" height="13"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Plano de Assistência Familiar]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="3" width="802" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="44">
+			<rectangle>
+				<reportElement x="-1" y="0" width="803" height="17" forecolor="#000000" backcolor="#99FF99"/>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="0" width="555" height="16"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="18">
+			<staticText>
+				<reportElement x="49" y="1" width="50" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº Fatura]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="119" y="1" width="54" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="1" width="43" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Apólice]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="427" y="1" width="50" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="192" y="1" width="54" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desconto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="258" y="0" width="39" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Multa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="309" y="1" width="89" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Valor Parceiro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="498" y="1" width="91" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data Pagamento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="599" y="0" width="91" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Parceiro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="704" y="0" width="98" height="16"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quitado Por]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15">
+			<textField>
+				<reportElement x="260" y="2" width="37" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{valorDesconto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="427" y="2" width="50" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{valorDesconto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="498" y="2" width="91" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{dataPagamento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="3" y="1" width="42" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{apolice.numeroContrato}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="48" y="1" width="51" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{numero_fatura}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="119" y="1" width="54" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="192" y="2" width="54" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{valorDesconto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="310" y="1" width="86" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{valorDesconto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="599" y="1" width="91" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{parceiro.descricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="704" y="2" width="98" height="13"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{colaborador.nome}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16"/>
+	</pageFooter>
+</jasperReport>

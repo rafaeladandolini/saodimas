@@ -1,0 +1,684 @@
+package br.com.saodimas.view.components.panel.apolice.editar.fatura;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ApoliceVO;
+import br.com.saodimas.model.beans.FaturaVO;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.principal.SaoDimasMain;
+import br.com.saodimas.view.components.button.ErrorButton;
+import br.com.saodimas.view.components.document.CustomDocument;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.panel.apolice.editar.ApoliceEditarMainPanel;
+import br.com.saodimas.view.components.table.model.FaturaTableModel;
+import br.com.saodimas.view.components.text.DataTextField;
+import br.com.saodimas.view.components.text.MoedaTextField;
+import br.com.saodimas.view.util.ExpReg;
+import br.com.saodimas.view.util.ListasComuns;
+import br.com.saodimas.view.util.validators.ValidaFatura;
+
+@SuppressWarnings("serial")
+public class FaturaPanel extends JPanel {
+	public static final String FORM_NAME = "Faturas";
+	private static final String MENSAGEM_PADRAO = "(*) Preenchimento obrigatório";
+
+	private FaturaVO fatura;
+	private ApoliceVO apolice;
+	private BarraNotificacao barNotificacao;
+	private JTextField txtNumeroFatura;
+	private JTextField txtDataEmissao;
+	private DataTextField spnDataVencimento;
+	private JTextField txtDataPagamento;
+	private MoedaTextField txtValorFatura;
+	private JSpinner spnMulta;
+	private JSpinner spnDesconto;
+	private JRadioButton rdSim;
+	private JRadioButton rdNao;
+	private ButtonGroup bgrOpcao;
+	private JPanel panelOpcao;
+	private JSpinner spnQuantidade;
+	private JCheckBox chkAtualizarTodos;
+
+	private ErrorButton btErroVencimento;
+	private ErrorButton btErroValor;
+
+	private JButton btCancelar;
+	private JButton btSalvar;
+
+	private JLabel lbNumeroFatura;
+	private JLabel lbDataEmissao;
+	private JLabel lbDataVencimento;
+	private JLabel lbDataPagamento;
+	private JLabel lbValorFatura;
+	private JLabel lbMulta;
+	private JLabel lbDesconto;
+	private JLabel lbOpcao;
+	private JLabel lbQtdeMeses;
+
+	private FaturaTableModel faturasTableModel;
+
+	private static final Dimension DLABEL = new Dimension(120, 22);
+	private static final Dimension DFIELDM = new Dimension(115, 22);
+	private static final Dimension DFIELDP = new Dimension(75, 22);
+
+	public FaturaPanel() {
+		initialize();
+		configure();
+	}
+
+	public void setApolice(ApoliceVO apolice) {
+		this.apolice = apolice;
+		if(apolice.getFaturas() == null)
+			apolice.setFaturas(new ArrayList<FaturaVO>());
+	}
+
+	public FaturaVO getFatura() {
+		return fatura;
+	}
+
+	public void setFatura(FaturaVO fatura) {
+		this.fatura = fatura;
+		if (fatura != null) {
+			String dataEmissao = fatura.getDataEmissao() != null ? new SimpleDateFormat("dd/MM/yyyy").format(fatura.getDataEmissao()).toString() : "";
+			txtDataEmissao.setText(dataEmissao);
+			spnDataVencimento.setText(formataData(fatura.getDataVencimento()));
+			txtValorFatura.setValor((Double)fatura.getValor());
+			lbOpcao.setVisible(false);
+			panelOpcao.setVisible(false);
+			
+		} else {
+			rdNao.doClick();
+			lbOpcao.setVisible(true);
+			panelOpcao.setVisible(true);
+			this.setEnableComponentsEditar(false);
+			limparCampos();
+			if(apolice.getFaturas().size() == 0)
+				spnDataVencimento.setText(formataData(apolice.getDataAdesao()));
+			else
+				spnDataVencimento.setText(formataData(getProximoVencimento()));
+			
+			txtValorFatura.setValor(calculaValorPlanoPessoas());
+		}
+
+	}
+	
+	private Double calculaValorPlanoPessoas()
+	{
+		Double valor = apolice.getPlano().getMensalidade();
+		int qntAssociados = apolice.getDependentes().size();
+		int qntAssociadosPlano = apolice.getPlano().getLimiteAssociado();
+		int qntAssociadosExtra = apolice.getPlano().getAssociado_extra();
+		
+		if(!apolice.getPlano().isEmpresarial() && qntAssociadosExtra > 0 && qntAssociados >= qntAssociadosPlano )
+			valor = (valor / qntAssociadosPlano) * qntAssociados;
+		
+		else if(apolice.getPlano().isEmpresarial())
+		{
+			valor = valor * qntAssociados;
+		}
+		
+		return valor;
+	}
+
+	private void setEnableComponentsEditar(boolean estado) {
+		lbDesconto.setVisible(estado);
+		spnDesconto.setVisible(estado);
+		spnMulta.setVisible(estado);
+		lbMulta.setVisible(estado);
+	}
+
+	public void setFaturasTableModel(FaturaTableModel faturasTableModel) {
+		this.faturasTableModel = faturasTableModel;
+	}
+
+	
+	public void limparCampos() {
+		SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar cV = Calendar.getInstance();
+		String dataIni = f.format(new Date(cV.getTimeInMillis()));
+		txtDataEmissao.setText(dataIni);
+		spnDataVencimento.setText("");
+		txtDataPagamento.setText("");
+		txtValorFatura.setValor(0d);
+		spnMulta.setValue(0);
+		spnDesconto.setValue(0);
+		rdNao.setSelected(true);
+		rdNao.doClick();
+		chkAtualizarTodos.setVisible(false);
+		chkAtualizarTodos.setSelected(false);
+	}
+
+	public void focoPadrao() {
+		spnDataVencimento.requestFocus();
+	}
+
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+
+		lbNumeroFatura = new JLabel("Número Fatura:  ", JLabel.RIGHT);
+		lbNumeroFatura.setPreferredSize(DLABEL);
+		lbNumeroFatura.setMinimumSize(DLABEL);
+		lbNumeroFatura.setVisible(fatura != null);
+
+		CustomDocument nomeDoc = new CustomDocument(ExpReg.NUMERIC, 15);
+		txtNumeroFatura = new JTextField();
+		txtNumeroFatura.setDocument(nomeDoc);
+		txtNumeroFatura.setPreferredSize(DFIELDM);
+		txtNumeroFatura.setEditable(false);
+		txtNumeroFatura.setVisible(fatura != null);
+
+		lbDataEmissao = new JLabel("Emitida em:  ", JLabel.RIGHT);
+		lbDataEmissao.setPreferredSize(DLABEL);
+		lbDataEmissao.setMinimumSize(DLABEL);
+
+		SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar cE = Calendar.getInstance();
+
+		String dataFin = f.format(new Date(cE.getTimeInMillis()));
+
+		txtDataEmissao = new JTextField(dataFin);
+		txtDataEmissao.setPreferredSize(DFIELDM);
+		txtDataEmissao.setMinimumSize(DFIELDM);
+		txtDataEmissao.setEditable(false);
+		txtDataEmissao.setHorizontalAlignment(JTextField.RIGHT);
+
+		lbDataVencimento = new JLabel("Vencimento: *", JLabel.RIGHT);
+		lbDataVencimento.setPreferredSize(DLABEL);
+		lbDataVencimento.setMinimumSize(DLABEL);
+
+		Calendar cP = Calendar.getInstance();
+		cP.add(Calendar.MONTH, 12);
+		cP.add(Calendar.YEAR,cP.get(Calendar.YEAR) + 4);
+		dataFin = f.format(new Date(cP.getTimeInMillis()));
+
+		cP = Calendar.getInstance();
+		//String dataIni = f.format(new Date(cP.getTimeInMillis()));
+
+		spnDataVencimento = new DataTextField();
+		spnDataVencimento.setPreferredSize(DFIELDM);
+		spnDataVencimento.setMinimumSize(DFIELDM);
+
+		lbDataPagamento = new JLabel("Pago em:  ", JLabel.RIGHT);
+		lbDataPagamento.setPreferredSize(DLABEL);
+		lbDataPagamento.setMinimumSize(DLABEL);
+		lbDataPagamento.setVisible(fatura != null);
+
+		txtDataPagamento = new JTextField(dataFin);
+		txtDataPagamento.setPreferredSize(DFIELDM);
+		txtDataPagamento.setMinimumSize(DFIELDM);
+		txtDataPagamento.setEditable(false);
+		txtDataPagamento.setHorizontalAlignment(JTextField.RIGHT);
+		txtDataPagamento.setVisible(fatura != null);
+
+		lbValorFatura = new JLabel("Valor (em R$): *", JLabel.RIGHT);
+		lbValorFatura.setPreferredSize(DLABEL);
+		lbValorFatura.setMinimumSize(DLABEL);
+
+		txtValorFatura = new MoedaTextField();
+		txtValorFatura.setPreferredSize(DFIELDP);
+		txtValorFatura.setMinimumSize(DFIELDP);
+				
+		lbMulta = new JLabel("Multa (%):  ", JLabel.RIGHT);
+		lbMulta.setPreferredSize(DLABEL);
+		lbMulta.setMinimumSize(DLABEL);
+		lbMulta.setVisible(false);
+
+		spnMulta = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+		spnMulta.setPreferredSize(DFIELDP);
+		spnMulta.setMinimumSize(DFIELDP);
+		spnMulta.setVisible(false);
+
+		lbDesconto = new JLabel("Desconto (%):  ", JLabel.RIGHT);
+		lbDesconto.setPreferredSize(DLABEL);
+		lbDesconto.setMinimumSize(DLABEL);
+		lbDesconto.setVisible(false);
+
+		spnDesconto = new JSpinner(new SpinnerNumberModel(0, 0, 100, 1));
+		spnDesconto.setPreferredSize(DFIELDP);
+		spnDesconto.setMinimumSize(DFIELDP);
+		spnDesconto.setVisible(false);
+
+		lbOpcao = new JLabel("Gerar mais faturas?  ", JLabel.RIGHT);
+		lbOpcao.setPreferredSize(DLABEL);
+		lbOpcao.setMinimumSize(DLABEL);
+		lbOpcao.setVisible(fatura == null);
+
+		rdSim = new JRadioButton("Sim");
+		rdSim.addActionListener(new EventoRadioOpcao());
+
+		rdNao = new JRadioButton("Não");
+		rdNao.addActionListener(new EventoRadioOpcao());
+
+		bgrOpcao = new ButtonGroup();
+		bgrOpcao.add(rdSim);
+		bgrOpcao.add(rdNao);
+		bgrOpcao.setSelected(rdNao.getModel(), true);
+
+		panelOpcao = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		panelOpcao.add(rdSim);
+		panelOpcao.add(rdNao);
+		panelOpcao.setMinimumSize(new Dimension(220, 25));
+		panelOpcao.setVisible(fatura == null);
+
+		lbQtdeMeses = new JLabel("Quantidade:  ", JLabel.RIGHT);
+		lbQtdeMeses.setPreferredSize(DLABEL);
+		lbQtdeMeses.setMinimumSize(DLABEL);
+		lbQtdeMeses.setVisible(false);
+
+		spnQuantidade = new JSpinner(new SpinnerNumberModel(1, 1, 12, 1));
+		spnQuantidade.setPreferredSize(DFIELDP);
+		spnQuantidade.setMinimumSize(DFIELDP);
+		spnQuantidade.setVisible(false);
+
+		chkAtualizarTodos = new JCheckBox(
+				"Atualizar as demais faturas com os mesmos valores.");
+		chkAtualizarTodos.setVisible(fatura != null);
+
+		btErroVencimento = new ErrorButton(spnDataVencimento, barNotificacao);
+		btErroValor = new ErrorButton(txtValorFatura, barNotificacao);
+
+		btCancelar = new JButton("Cancelar",
+				new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+
+		btSalvar = new JButton("OK", new ImageIcon("imagens/accept.gif"));
+		btSalvar.addActionListener(new EventoBotaoControle());
+		btSalvar.setHorizontalAlignment(JButton.LEFT);
+
+	}
+
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infFatura = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+		c.gridy = 1;
+		infFatura.add(lbNumeroFatura, c);
+		c.gridy = 2;
+		infFatura.add(lbDataEmissao, c);
+		c.gridy = 3;
+		infFatura.add(lbDataVencimento, c);
+		c.gridy = 4;
+		infFatura.add(lbDataPagamento, c);
+		c.gridy = 5;
+		infFatura.add(lbValorFatura, c);
+		c.gridy = 6;
+		infFatura.add(lbMulta, c);
+		c.gridy = 7;
+		infFatura.add(lbDesconto, c);
+		c.gridy = 8;
+		infFatura.add(lbOpcao, c);
+		c.gridy = 9;
+		infFatura.add(lbQtdeMeses, c);
+		c.gridwidth = 2;
+		c.gridy = 10;
+		infFatura.add(chkAtualizarTodos, c);
+		c.weighty = 1;
+		c.gridy = 11;
+		infFatura.add(new JLabel(""), c);
+
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = 1;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		c.gridy = 1;
+		infFatura.add(txtNumeroFatura, c);
+		c.gridy = 2;
+		infFatura.add(txtDataEmissao, c);
+		c.gridy = 3;
+		infFatura.add(spnDataVencimento, c);
+		c.gridy = 4;
+		infFatura.add(txtDataPagamento, c);
+		c.gridy = 5;
+		infFatura.add(txtValorFatura, c);
+		c.gridy = 6;
+		infFatura.add(spnMulta, c);
+		c.gridy = 7;
+		infFatura.add(spnDesconto, c);
+		c.gridy = 8;
+		infFatura.add(panelOpcao, c);
+		c.gridy = 9;
+		infFatura.add(spnQuantidade, c);
+
+		c.anchor = GridBagConstraints.LINE_START;
+		c.fill = GridBagConstraints.NONE;
+		c.gridwidth = 1;
+		c.weightx = 0;
+		c.weighty = 0;
+		c.gridx = 2;
+		c.gridy = 3;
+		infFatura.add(btErroVencimento, c);
+		c.gridy = 5;
+		infFatura.add(btErroValor, c);
+
+		infFatura.setBorder(BorderFactory.createTitledBorder("Fatura"));
+		adicionarAtalhosComandos(infFatura);
+
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(btSalvar);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+
+		JPanel panelFatura = new JPanel(new BorderLayout());
+		panelFatura.add(barNotificacao, BorderLayout.NORTH);
+		panelFatura.add(infFatura, BorderLayout.CENTER);
+		panelFatura.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelFatura);
+
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelFatura);
+		adicionarAtalhosComandos(formPrincipal);
+
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+
+	}
+
+	private void adicionarAtalhosComandos(JPanel panel) {
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+						btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER)
+						btSalvar.doClick();
+					else
+						super.keyPressed(e);
+				}
+			});
+		}
+	}
+
+	public void pack()
+	{
+		Component c = getPainelPrincipal();
+		((ApoliceEditarMainPanel)c).getIframeFatura().pack();
+	}
+	
+	private ApoliceEditarMainPanel getPainelPrincipal() {
+		Component c = getParent();
+		while (c != null) {
+			if (c instanceof ApoliceEditarMainPanel)
+				return (ApoliceEditarMainPanel) c;
+			c = c.getParent();
+		}
+		return (ApoliceEditarMainPanel) c;
+	}
+
+
+	private void validaVencimentoValor() throws MensagemSaoDimasException
+	{
+		String erroData = "", erroValor = "";
+		erroValor = ValidaFatura.validaValor(txtValorFatura.getValor());
+		erroData = ValidaFatura.validaVencimento(transformarData(spnDataVencimento.getText()));
+		
+		if (erroData.length() > 0 || erroValor.length() > 0){
+			if (erroValor.length() > 0)
+				btErroValor.setMensagem(erroValor);
+			if (erroData.length() > 0)	{
+				btErroVencimento.setMensagem(erroData);
+			}
+			
+			throw new MensagemSaoDimasException("Erro ao salvar a Fatura.");
+		}else {
+			btErroValor.setMensagem(null);
+			btErroVencimento.setMensagem(null);
+		}
+	}
+	
+	private class EventoBotaoControle implements ActionListener {
+			
+		private Vector<FaturaVO> list = null;
+		
+		public void actionPerformed(ActionEvent e) {
+
+			ApoliceEditarMainPanel c = getPainelPrincipal();
+			if (e.getSource() == btCancelar) {
+				if (c != null) {
+					c.getIframeFatura().setVisible(false);
+				}
+			} else if (e.getSource() == btSalvar) {
+				try {
+					list = faturasTableModel.getDataVector();
+					
+					if (fatura != null){
+						this.editarFatura();
+						c.mostrarMensagemFatura("Alteração efetuada com sucesso.",BarraNotificacao.SUCESSO);
+					}
+					else{
+						
+						validaVencimentoValor();
+						if(SaoDimasMain.colaborador.getTipoColaborador().equals(ListasComuns.FUNCIONARIO))
+							validaDataVencimento(transformarData(spnDataVencimento.getText()));
+						this.novaFatura();
+						c.mostrarMensagemFatura("Fatura(s) criadas com sucesso.",BarraNotificacao.SUCESSO);
+					}
+
+					limparCampos();
+					
+					if (c != null) {
+						c.getIframeFatura().setVisible(false);
+					}
+
+				} catch (MensagemSaoDimasException em) {
+					barNotificacao.mostrarMensagem(em.getMessage(),
+							BarraNotificacao.ERRO);
+					
+				}finally
+				{
+					pack();
+				}
+			}
+	    }
+		
+		private void editarFatura() throws MensagemSaoDimasException
+		{
+			if (fatura.getNumeroFatura() > 0) {
+				fatura.setApolice(fatura.getApolice());
+				fatura.setDataEmissao(new Date(Calendar.getInstance().getTimeInMillis()));
+				fatura.setDataVencimento(transformarData(spnDataVencimento.getText()));
+				fatura.setValor(txtValorFatura.getValor());
+				fatura.setValorDesconto(txtValorFatura.getValor()* ((Integer) spnDesconto.getValue() / 100));
+				fatura.setValorMulta(txtValorFatura.getValor()* ((Integer) spnMulta.getValue() / 100));
+				faturasTableModel.fireTableDataChanged();
+				Controller.getInstance().updateFatura(fatura);
+				
+		
+			}
+		}
+		
+		private FaturaVO fabricaFatura(int numero, Date data)
+		{
+			FaturaVO f = new FaturaVO();
+			f.setApolice(apolice);
+			f.setStatus(ListasComuns.STATUS_FATURA[0]);
+			f.setNumeroFatura(numero);
+			f.setDataEmissao(new Date(Calendar.getInstance().getTimeInMillis()));
+			f.setDataVencimento(data);
+			f.setValor(txtValorFatura.getValor());
+			f.setValorDesconto(txtValorFatura.getValor()* ((Integer) spnDesconto.getValue() / 100));
+			f.setValorMulta(txtValorFatura.getValor()* ((Integer) spnMulta.getValue() / 100));
+						
+			return f;
+		}
+		
+		private void novaFatura()throws MensagemSaoDimasException{
+			
+				int maiorNum = 0;
+				int numFaturas = spnQuantidade.isVisible() ? (Integer) spnQuantidade.getValue()	: 1;
+	
+				for (FaturaVO fatura : list)
+					if (fatura.getNumeroFatura() >= maiorNum)
+						maiorNum = fatura.getNumeroFatura();
+	
+				maiorNum++;
+				Calendar c = new GregorianCalendar();
+				c.setTime(transformarData(spnDataVencimento.getText()));
+				int mes = c.get(Calendar.MONTH);
+				int dia = c.get(Calendar.DAY_OF_MONTH);
+				for (int i = 0; i < numFaturas; i++)
+				{
+					maiorNum++;
+					FaturaVO n = new FaturaVO();
+				
+					mes = (mes % 12) + 1;
+					
+					if(dia > 28 && mes == 2)
+						c.set(Calendar.DAY_OF_MONTH, 28);
+					else if(dia > 30 && (mes == 4 || mes == 6 || mes == 9 || mes == 11))
+						c.set(Calendar.DAY_OF_MONTH, 30);
+					else
+						c.set(Calendar.DAY_OF_MONTH, dia);
+					
+					n =  fabricaFatura(list.size() + 1, new Date(c.getTimeInMillis()));
+					
+					Controller.getInstance().insertFatura(n);
+					list.add(n);
+					
+					apolice.getFaturas().add(n);
+		
+				
+					
+					c.set(Calendar.MONTH, mes);
+					
+										
+				}
+				faturasTableModel.fireTableDataChanged();
+		}
+	}
+
+	private Date getUltimoVencimento()
+	{
+		Calendar c = Calendar.getInstance();
+		if(apolice.getFaturas().size() == 0)
+			return new Date(c.getTimeInMillis());
+		
+		c.set(Calendar.YEAR, 1900);
+		Date dataMaisDistante = new Date(c.getTimeInMillis());
+		List<FaturaVO> listFat = apolice.getFaturas();
+		for (FaturaVO faturaVO : listFat) {
+			if(faturaVO.getDataVencimento().after(dataMaisDistante))
+				dataMaisDistante = faturaVO.getDataVencimento();
+		}
+		
+		return dataMaisDistante;
+	}
+	
+	private Date getProximoVencimento(){
+		
+		Calendar c = new GregorianCalendar();
+		c.setTime(getUltimoVencimento());
+		
+		int mes = c.get(Calendar.MONTH);
+		int dia = c.get(Calendar.DAY_OF_MONTH);
+		
+		mes = (mes % 12) + 1;
+		
+		if(dia > 28 && mes == 2)
+			c.set(Calendar.DAY_OF_MONTH, 28);
+		else if(dia > 30 && (mes == 4 || mes == 6 || mes == 9 || mes == 11))
+			c.set(Calendar.DAY_OF_MONTH, 30);
+		else
+			c.set(Calendar.DAY_OF_MONTH, dia);
+		
+		c.set(Calendar.MONTH,mes);
+		
+		return new Date(c.getTimeInMillis());
+	}
+	
+	private void validaDataVencimento(Date auxdataMesInformado) throws MensagemSaoDimasException
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(getUltimoVencimento().getTime());
+		c.set(Calendar.HOUR, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		
+		Date proximoVenc = new Date(c.getTimeInMillis());
+		
+		c.setTimeInMillis(auxdataMesInformado.getTime());
+		c.set(Calendar.HOUR, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		
+		Date dataMesInformado = new Date(c.getTimeInMillis());
+		
+		SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy");
+		
+		if(dataMesInformado.before(proximoVenc))
+		{
+			if(!sf.format(dataMesInformado).equals((sf.format(proximoVenc))))
+				throw new MensagemSaoDimasException("O venc. deve ser superior ou =" + sf.format(proximoVenc));
+		}
+	}
+	
+	private class EventoRadioOpcao implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			boolean mostrarAdicao = (e.getSource() == rdSim);
+			lbQtdeMeses.setVisible(mostrarAdicao);
+			spnQuantidade.setVisible(mostrarAdicao);
+			ApoliceEditarMainPanel c = getPainelPrincipal();
+			if (c != null) {
+				c.getIframeFatura().pack();
+			}
+		}
+	}
+	
+	private Date transformarData(String data)
+	{
+		try{
+			SimpleDateFormat simpledataformat = new SimpleDateFormat("dd/MM/yyyy");
+			return simpledataformat.parse(data);
+		}catch (ParseException e) {
+			
+		}
+		return new Date();
+	}
+	
+	private String formataData(Date date)
+	{
+		SimpleDateFormat simpledataformat = new SimpleDateFormat("dd/MM/yyyy");
+		return simpledataformat.format(date);
+		
+	}
+}
