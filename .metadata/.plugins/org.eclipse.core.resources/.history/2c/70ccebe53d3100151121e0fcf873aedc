@@ -1,0 +1,44 @@
+package br.com.saodimas.model.dao.connection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+
+public class SqlConnector {
+
+	private static SqlConnector sqlConnector =  new SqlConnector();
+	
+	public static SqlConnector getInstance() {
+		if(sqlConnector == null)
+			sqlConnector = new SqlConnector();
+		return sqlConnector;
+	}
+	
+	private Connection conn = null;
+	
+	public Connection getConnection() throws SQLException, MensagemSaoDimasException
+	{
+		if(conn == null)
+		{
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				conn = DriverManager.getConnection("jdbc:mysql://SAODIMAS-PC:3306/saodimas", "rafaela", "root");
+				//conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/saodimas", "root", "root");
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				throw new MensagemSaoDimasException();
+			}			  
+		}
+		
+		return conn;
+		
+	}
+	
+	public void closeConnection() throws SQLException
+	{
+		if(conn != null)
+			conn.close();
+	}
+}

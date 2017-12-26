@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item value="280" key="DIALOG_Y_ORIGIN"/>
+		<item value="409" key="DIALOG_X_ORIGIN"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="PERFIL_ADMIN" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="false" key="wrap"/>
+		<item value="false" key="wholeword"/>
+		<list key="findhistory">
+			<item value="PERFIL_ADMIN"/>
+			<item value="delete"/>
+			<item value="valid"/>
+			<item value="veri"/>
+			<item value="deleteP"/>
+			<item value="Status"/>
+			<item value="listGr"/>
+			<item value="listGru"/>
+			<item value="ListCOns"/>
+			<item value="ListaCon"/>
+			<item value="TOtal gasto"/>
+			<item value="TOtal gastro"/>
+			<item value="TOTAL"/>
+			<item value="TOTAL COMPRA"/>
+		</list>
+		<list key="replacehistory">
+			<item value="FORNECEDOR"/>
+			<item value="; ;"/>
+			<item value="EmprestimoEquipamentoTableModel"/>
+			<item value=""/>
+			<item value="EquipamentoVO"/>
+			<item value="EuipamentoVO"/>
+			<item value="EmprestimoEquipamentoVO"/>
+			<item value="EmpresatimoEquipamentoVO"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="257" key="DIALOG_WIDTH"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="378" key="DIALOG_HEIGHT"/>
+		<item value="275" key="DIALOG_Y_ORIGIN"/>
+		<item value="955" key="DIALOG_X_ORIGIN"/>
+	</section>
+</section>

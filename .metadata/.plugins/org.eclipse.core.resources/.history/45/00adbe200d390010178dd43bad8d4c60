@@ -1,0 +1,132 @@
+package br.com.saodimas.view.components.table.model;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.table.AbstractTableModel;
+
+import br.com.saodimas.model.beans.ApoliceVO;
+
+/**
+ * Classe que define a apresentação da Jtable que representa as apólices disponíveis. 
+ * @author daniel/rafaela
+ *
+ */
+@SuppressWarnings("serial")
+public class ApoliceTableModel extends AbstractTableModel{
+	public static final int APOLICE = -1;
+	//public static final int NUMERO = 0;
+	public static final int CONTRATO = 0;
+	public static final int NOME = 1;
+	public static final int PLANO = 2;
+	public static final int DATA = 3;
+	
+	private String[] columnNames = {"Número Apólice","Nome do Titular","Plano","Data de Adesão"};
+	private Vector <ApoliceVO> dataVector;
+	
+	public ApoliceTableModel() {
+		dataVector = new Vector<ApoliceVO>();
+	}
+	
+	public int getColumnCount() {
+		return columnNames.length;
+	}
+
+	public int getRowCount() {
+		return dataVector.size();
+	}
+	
+	public String getColumnName(int column){
+		return columnNames[column];
+	}
+	
+	public Object getSelectedValue(int row){
+		return dataVector.get(row);
+	}
+
+	public Object getValueAt(int row, int col) {
+		switch (col) {
+		//case NUMERO:     return  dataVector.get(row).getId();
+		case NOME:		return dataVector.get(row).getTitular() != null ? dataVector.get(row).getTitular().getNome() : "Undefined";
+		case CONTRATO:	return dataVector.get(row).getNumeroContrato();
+		case PLANO:		return dataVector.get(row).getPlano() != null ? dataVector.get(row).getPlano().getDescricao() : "";
+		case DATA:		return new SimpleDateFormat("dd/MM/yyyy").format(dataVector.get(row).getDataAdesao());
+		default: return dataVector.get(row);
+		}
+	}
+	
+    public void setValueAt(Object value, int row, int col) {
+        fireTableCellUpdated(row, col);
+    }
+
+    public void add(ApoliceVO ap) {
+    	dataVector.add(ap);
+        fireTableDataChanged();
+    }
+    
+    /**
+     * Remove um colaborador da tabela.
+     * @param (Apolice)c
+     */
+    public void remove(ApoliceVO ap) {
+    	dataVector.remove(ap);
+        fireTableDataChanged();
+    }
+    
+    /**
+     * Remove um colaborador da tabela na posição específicada.
+     * @param (int)row
+     */
+    public void removeAt(int pos){
+    	dataVector.remove(pos);
+        fireTableDataChanged();
+    }
+
+	/**
+	 * Remove todos apólices da tabela.
+	 */
+	public void removeAll(){
+		dataVector.clear();
+		fireTableDataChanged();
+	}
+
+	public Class<?> getColumnClass(int column) {
+		switch (column) {
+	//	case NUMERO:	return String.class;
+		case CONTRATO:	return String.class;
+		case NOME:		return String.class;
+		case PLANO:		return String.class;
+		case DATA:		return Date.class;
+		default: return String.class;
+		}
+	}
+    
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    	return false; 
+    }
+
+    /**
+     * Alimenta a tabela com uma lista de apólices.
+     * @param (List<Apolice>)listaApolices
+     */
+    public void loadData(List<ApoliceVO> listaApolices){
+    	if(listaApolices!= null){
+    		dataVector.clear();
+    		dataVector.addAll(listaApolices);
+    		fireTableDataChanged();
+    	}
+    	else removeAll();
+    }
+    
+    public List getList()
+    {
+    	return dataVector;
+    }
+    
+}
+
+

@@ -1,0 +1,387 @@
+package br.com.saodimas.view.components.panel.financeiro.compra;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.CompraVO;
+import br.com.saodimas.model.beans.EmpresaCompraVO;
+import br.com.saodimas.model.beans.ProdutoCompraVO;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.view.components.document.CustomDocument;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.table.CompraProdutoTable;
+import br.com.saodimas.view.components.table.model.CompraProdutoTableModel;
+import br.com.saodimas.view.components.text.DataTextField;
+
+@SuppressWarnings("serial")
+public class CompraPanel extends JPanel {
+	private static final String MENSAGEM_PADRAO = "   (*) Preenchimento obrigatório";
+
+	private CompraVO compraVo;
+	private BarraNotificacao barNotificacao;
+		
+	private DataTextField dataCompra;
+	private JTextField txtDescricao;
+	private JTextField txtVendedor;
+	private JTextField txtObservacao;
+	private JComboBox cbEmpresa;
+	
+	private JButton btCancelar;
+	private JButton btSalvar;
+	
+	private JLabel lbDataCompra;
+	private JLabel lbDescricao;
+	private JLabel lbVendedor;
+	private JLabel lbObservacao;
+	private JLabel lbEmpresa;
+	
+	private JButton btAdicionar;
+	private JButton btRemover;
+	private JButton btEditar;
+	private JToolBar barControle;
+	
+	//private List<ProdutoCompraVO> removerProdutosCompra;
+	private CompraProdutoTable tbProdutos;
+	
+	private static final Dimension DLABEL = new Dimension(120,22);
+	private static final Dimension DFIELDM = new Dimension(200,22);
+	private static final Dimension DBUTTON = new Dimension(30,30);
+	
+	public CompraPanel() {
+		initialize();
+		configure();
+	}
+
+	public void adicionaProduto(ProdutoCompraVO p) {
+
+		CompraProdutoTableModel model = (CompraProdutoTableModel) tbProdutos.getModel();
+		model.add(p);
+		model.fireTableDataChanged();
+		tbProdutos.getSelectionModel().addSelectionInterval(0, 0);
+	}
+	
+	
+	public CompraVO getCompraVO() {
+		return compraVo;
+	}
+
+	public void setCompra(CompraVO compra) {
+		this.compraVo = compra;
+		this.carregarEmpresas();
+		this.limparCampos();
+		
+		if(compra != null){
+			dataCompra.setText(formataData(compra.getDataCompra()));
+			txtDescricao.setText(compra.getDescricao());
+			txtObservacao.setText(compra.getObservacao());
+			txtVendedor.setText(compra.getVendedor());
+			cbEmpresa.setSelectedItem(compra.getEmpresa());
+		}
+	}
+
+	public void carregarEmpresas()
+	{
+		List<EmpresaCompraVO> list = Controller.getInstance().getEmpresaCompraAll();
+		cbEmpresa.removeAllItems();
+		for (int i=0; i< list.size(); i++) {
+			cbEmpresa.addItem(list.get(i));
+		}
+		cbEmpresa.repaint();
+	}
+	
+	public void limparCampos() {
+	
+		dataCompra.setText("");
+		txtDescricao.setText("");
+		txtObservacao.setText("");
+		txtVendedor.setText("");
+		cbEmpresa.setSelectedIndex(0);
+	}
+	
+	
+	public void focoPadrao(){
+		dataCompra.requestFocus();
+	}
+	
+	private void initialize() {
+		
+		
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+		
+		lbDataCompra = new JLabel("Data Compra: ", JLabel.RIGHT);
+		lbDataCompra.setPreferredSize(DLABEL);
+		lbDataCompra.setMinimumSize(DLABEL);
+		
+		dataCompra = new DataTextField();
+		dataCompra.setPreferredSize(DFIELDM);
+		dataCompra.setMinimumSize(DFIELDM);
+		
+		lbEmpresa = new JLabel("Empresa: ", JLabel.RIGHT);
+		lbEmpresa.setPreferredSize(DLABEL);
+		lbEmpresa.setMinimumSize(DLABEL);
+		
+		cbEmpresa = new JComboBox();
+		
+		lbDescricao = new JLabel("Descrição: ", JLabel.RIGHT);
+		lbDescricao.setPreferredSize(DLABEL);
+		lbDescricao.setMinimumSize(DLABEL);
+		
+		CustomDocument desDoc = new CustomDocument(150);
+		txtDescricao = new JTextField();
+		txtDescricao.setDocument(desDoc);
+		txtDescricao.setPreferredSize(DFIELDM);
+		
+		lbVendedor = new JLabel("Vendedor: ", JLabel.RIGHT);
+		lbVendedor.setPreferredSize(DLABEL);
+		lbVendedor.setMinimumSize(DLABEL);
+		
+		CustomDocument venDoc = new CustomDocument(100);
+		txtVendedor = new JTextField();
+		txtVendedor.setDocument(venDoc);
+		txtVendedor.setPreferredSize(DFIELDM);
+		
+		lbObservacao = new JLabel("Observação: ", JLabel.RIGHT);
+		lbObservacao.setPreferredSize(DLABEL);
+		lbObservacao.setMinimumSize(DLABEL);
+		
+		CustomDocument obsDoc = new CustomDocument(255);
+		txtObservacao = new JTextField();
+		txtObservacao.setDocument(obsDoc);
+		txtObservacao.setPreferredSize(DFIELDM);
+
+		btCancelar = new JButton("Cancelar", new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+		
+		btSalvar = new JButton("Salvar", new ImageIcon("imagens/save.gif"));
+		btSalvar.addActionListener(new EventoBotaoControle());
+		btSalvar.setHorizontalAlignment(JButton.LEFT);
+		
+		//removerProdutosCompra = new ArrayList<ProdutoCompraVO>();
+		
+		btAdicionar = new JButton();
+		btAdicionar.setIcon(new ImageIcon("imagens/add.gif"));
+		btAdicionar.addActionListener(new EventoBotaoControle());
+		btAdicionar.setToolTipText("Clique para adicionar um produto ao plano!");
+		btAdicionar.setPreferredSize(DBUTTON);
+		
+		btRemover = new JButton();
+		btRemover.setIcon(new ImageIcon("imagens/remove.gif"));
+		btRemover.addActionListener(new EventoBotaoControle());
+		btRemover.setToolTipText("Clique para remover um produto do plano!");
+		btRemover.setPreferredSize(DBUTTON);
+		btRemover.setEnabled(false);
+
+		btEditar = new JButton();
+		btEditar.setIcon(new ImageIcon("imagens/edit.gif"));
+		btEditar.addActionListener(new EventoBotaoControle());
+		btEditar.setToolTipText("Editar Produto!");
+		btEditar.setPreferredSize(DBUTTON);
+		btEditar.setEnabled(false);
+		
+		barControle = new JToolBar();
+		barControle.setFloatable(false);
+		barControle.setOpaque(false);
+		barControle.setBorderPainted(false);
+		barControle.setBorder(BorderFactory.createEmptyBorder());
+		barControle.setMargin(new Insets(0, 0, 0, 0));
+		barControle.add(btAdicionar);
+		barControle.add(btEditar);
+		barControle.add(btRemover);
+		
+		
+		tbProdutos = new CompraProdutoTable();
+		tbProdutos.getSelectionModel().addListSelectionListener(new EventoTabela());
+	}
+	
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		
+		JPanel infProdutos = new JPanel(new GridBagLayout());
+		c.anchor = GridBagConstraints.LAST_LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(0, 1, 0, 1);
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = 0; infProdutos.add(barControle, c);
+		
+		//JScrollPane prodPanel = new JScrollPane(tbProdutos);
+		//prodPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+	
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridx = 0;
+		c.gridy = 1; infProdutos.add(tbProdutos, c);
+		infProdutos.setBorder(BorderFactory.createTitledBorder("Produtos"));
+				
+		JPanel infUser = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+
+		c.gridy = 0; infUser.add(lbDataCompra,c);
+		c.gridy = 1; infUser.add(lbEmpresa, c);
+		c.gridy = 2; infUser.add(lbDescricao, c);
+		c.gridy = 3; infUser.add(lbVendedor, c);
+		c.gridy = 4; infUser.add(lbObservacao, c);
+								
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		c.fill = GridBagConstraints.NONE;
+		c.gridy = 0; infUser.add(dataCompra, c);
+		c.gridy = 1; infUser.add(cbEmpresa, c);
+		c.gridy = 2; infUser.add(txtDescricao, c);
+		c.gridy = 3; infUser.add(txtVendedor, c);
+		c.gridy = 4; infUser.add(txtObservacao, c);
+		c.gridy = 5; infUser.add(infProdutos, c);
+	
+		infUser.setBorder(BorderFactory.createTitledBorder("Compra"));
+		adicionarAtalhosComandos(infUser);
+		
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(btSalvar);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+		
+		JPanel panelColaborador = new JPanel(new BorderLayout());
+		panelColaborador.add(barNotificacao, BorderLayout.NORTH);
+		panelColaborador.add(infUser, BorderLayout.CENTER);
+		panelColaborador.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelColaborador);
+		
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelColaborador);
+		adicionarAtalhosComandos(formPrincipal);
+		
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+	}
+	
+	private void adicionarAtalhosComandos(JPanel panel){
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter(){
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) btSalvar.doClick();
+					else super.keyPressed(e);
+				}
+			});
+		}
+	}
+	
+	private Component getPainelPrincipal(){
+		Component c = getParent();
+		while (c != null){
+			if (c instanceof CompraMainPanel) return c;
+			c = c.getParent();
+		}
+		return c;
+	}	
+	
+
+		
+	private class EventoBotaoControle implements ActionListener{
+	
+		public void actionPerformed(ActionEvent e) {
+			
+			Component c = getPainelPrincipal();
+			if (e.getSource() == btCancelar){
+				try{
+					((CompraMainPanel)c).getIFrameCompra().setVisible(false);
+				}
+				catch(ClassCastException cex){
+					cex.printStackTrace();
+				}
+			}else
+			if (e.getSource() == btSalvar)
+			{
+				salvarCompra();	
+			} 
+		}
+	}
+	
+	@SuppressWarnings({ "static-access", "deprecation"})
+	private void salvarCompra()
+	{
+		Component c = getPainelPrincipal();
+		CompraVO novaCompra = new CompraVO();
+		
+		try{
+			novaCompra.setDataCompra(new Date(dataCompra.getText()));
+			novaCompra.setDescricao(txtDescricao.getText());
+			novaCompra.setEmpresa((EmpresaCompraVO)cbEmpresa.getSelectedItem());
+			novaCompra.setObservacao(txtObservacao.getText());
+			novaCompra.setVendedor(txtVendedor.getText());
+			
+			if (compraVo != null) {
+				novaCompra.setId(compraVo.getId());
+				Controller.getInstance().updateCompra(novaCompra);
+				((CompraMainPanel) c).mostrarMensagem(
+						"Alterações efetuadas com sucesso.",
+						barNotificacao.INFO);
+			} else {
+				Controller.getInstance().insertCompra(novaCompra);
+				((CompraMainPanel) c).mostrarMensagem(
+						"Cadastro efetuado com sucesso.", barNotificacao.INFO);
+			}
+
+			((CompraMainPanel) c).carregarCompras();
+			((CompraMainPanel) c).getIFrameCompra().setVisible(false);
+
+		} catch (MensagemSaoDimasException ex) {
+			barNotificacao
+					.mostrarMensagem(ex.getMessage(), barNotificacao.ERRO);
+			ex.printStackTrace();
+		}
+	}
+	
+	private String formataData(Date date)
+	{
+		SimpleDateFormat simpledataformat = new SimpleDateFormat("dd/MM/yyyy");
+		return simpledataformat.format(date);
+		
+	}
+	
+	private class EventoTabela implements ListSelectionListener{
+		public void valueChanged(ListSelectionEvent arg0) {
+			btRemover.setEnabled(tbProdutos.getSelectedRow() > -1);
+			btEditar.setEnabled(tbProdutos.getSelectedRow() > -1);
+		}
+	}
+	
+	
+}	

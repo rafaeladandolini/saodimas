@@ -1,0 +1,172 @@
+package br.com.saodimas.view.components.table.model;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Currency;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import javax.swing.ImageIcon;
+import javax.swing.table.DefaultTableModel;
+
+import br.com.saodimas.model.beans.FaturaVO;
+
+@SuppressWarnings("serial")
+public class FaturaTableModel extends DefaultTableModel {
+	public static final int FATURA = -1;
+	public static final int SELECAO = 0;
+	public static final int SEM_CARNE = 1;
+	public static final int NUMFATURA = 2;
+	public static final int VENCIMENTO = 3;
+	public static final int PAGAMENTO = 4;
+	public static final int VALOR = 5;
+	public static final int TOTAL = 6;
+	public static final int QUITADO_POR = 7;
+	public static final int IS_PARCEIRO = 8;
+	public static final int DATA_BAIXA = 9;
+	
+	private ImageIcon iconDestacadoPagamento = new ImageIcon("imagens/seta_abaixo_verde", "Já destacado pagamento sem carne");
+	private ImageIcon iconPagamentoSemCarne = new ImageIcon("imagens/seta_abaixo_amarela", "Pagamento sem carne");
+		
+	private String[] columnNames = {"", "S/ Carne","Nº.", "Vencimento","Pagamento","Valor","Total","Quitado por", "Parceiro", "Data da Baixa"};
+	private Vector <FaturaVO> dataVector;
+		
+	public FaturaTableModel() {
+		dataVector = new Vector<FaturaVO>();
+	}
+	
+	public int getColumnCount() {
+		return columnNames.length;
+	}
+
+	public int getRowCount() {
+		return (dataVector != null)? dataVector.size() : 0;
+	}
+	
+	public String getColumnName(int column){
+		return columnNames[column];
+	}
+	
+	public Object getSelectedValue(int row){
+		return dataVector.get(row);
+	}
+	
+	@Override
+	public Vector<FaturaVO> getDataVector() {
+		return dataVector;
+	}
+
+	public Object getValueAt(int row, int col) {
+		switch (col) {
+		case SELECAO:
+			return dataVector.get(row).isSelecionada();
+		case NUMFATURA:     return dataVector.get(row).getNumeroFatura() + "";
+		case VENCIMENTO:
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			return sdf.format(dataVector.get(row).getDataVencimento()) + "";
+		case DATA_BAIXA:
+			if(dataVector.get(row).getDataBaixa()== null)
+				return null;
+			SimpleDateFormat sdfff = new SimpleDateFormat("dd/MM/yyyy");
+			return sdfff.format(dataVector.get(row).getDataBaixa()) + "";
+		case PAGAMENTO:     
+			if(dataVector.get(row).getDataPagamento()== null)
+				return null;
+			SimpleDateFormat sdff = new SimpleDateFormat("dd/MM/yyyy");
+			return sdff.format(dataVector.get(row).getDataPagamento()) + "";
+		case VALOR: return this.formataPreco(dataVector.get(row).getValor());
+		case TOTAL:
+			Double valorTotal = dataVector.get(row).getValor() - dataVector.get(row).getValorDesconto() + dataVector.get(row).getValorMulta();
+			return this.formataPreco(valorTotal);
+			
+		case  SEM_CARNE: return dataVector.get(row).getIsPagamentoSemCarne() != null && dataVector.get(row).getIsPagamentoSemCarne().equals("Sim") ?  iconPositivo : iconNegativo ;
+		
+		case QUITADO_POR:		return (dataVector.get(row).getColaborador() == null)? "" :  dataVector.get(row).getColaborador().getNome();
+		case IS_PARCEIRO: return (dataVector.get(row).getParceiro() == null ? "" : dataVector.get(row).getParceiro().getDescricao());
+		default: return dataVector.get(row);
+		}
+	}
+	
+    public void setValueAt(Object value, int row, int col) {
+    	if (col == SELECAO) dataVector.get(row).setSelecionada((Boolean)value);
+        fireTableCellUpdated(row, col);
+    }
+
+    public void add(FaturaVO s) {
+    	s.setSelecionada(false);
+    	dataVector.add(s);
+    	fireTableDataChanged();
+    }
+    
+    /**
+     * Remove uma fatura da tabela.
+     * @param (Fatura)s
+     */
+    public void remove(FaturaVO s) {
+    	dataVector.remove(s);
+        fireTableDataChanged();
+    }
+    
+    /**
+     * Remove uma fatura da tabela na posição específicada.
+     * @param (int)row
+     */
+    public void removeAt(int pos){
+    	dataVector.remove(pos);
+    	fireTableDataChanged();
+    }
+    
+	/**
+	 * Remove todos produtos da tabela.
+	 */
+	public void removeAll(){
+		dataVector.clear();
+		fireTableDataChanged();
+	}
+
+	public Class<?> getColumnClass(int column) {
+		switch (column) {
+		
+		case SELECAO: 		return Boolean.class; 
+		case NUMFATURA:     return String.class;
+		case VENCIMENTO:    return Date.class;
+		case PAGAMENTO:     return Date.class;
+		case DATA_BAIXA:    return Date.class;
+		case VALOR:         return Double.class;
+		case TOTAL:         return Double.class;
+		case SEM_CARNE:     return String.class;
+		case QUITADO_POR:   return String.class;
+		case IS_PARCEIRO:   return String.class;
+		default:            return String.class;
+		}
+	}
+	
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+    	return columnIndex == SELECAO; 
+    }
+
+    /**
+     * Alimenta a tabela com uma lista de faturas.
+     * @param (List<Fatura>)listaFaturas
+     */
+    public void loadData(List<FaturaVO> listaFatura){
+    	if(listaFatura!= null){
+    		removeAll();
+    		for (FaturaVO fat : listaFatura) {
+				fat.setSelecionada(new Boolean(false));
+    			dataVector.add(fat);
+			}
+    		fireTableDataChanged();
+    	}
+    }
+    
+    private String formataPreco(double valor)
+    {
+    	DecimalFormat df = new DecimalFormat("#,###,###.00");
+		df.setCurrency(Currency.getInstance(new Locale("pt","br")));
+		String preco = "R$ " + df.format(valor);
+		return preco;
+    }
+}

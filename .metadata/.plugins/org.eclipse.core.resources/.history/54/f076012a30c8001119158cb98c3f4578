@@ -1,0 +1,366 @@
+package br.com.saodimas.model.dao.impl;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.saodimas.model.beans.ApoliceVO;
+import br.com.saodimas.model.beans.AssociadoVO;
+import br.com.saodimas.model.beans.CidadeVO;
+import br.com.saodimas.model.beans.ObitoVO;
+import br.com.saodimas.model.beans.ProdutoObitoVO;
+import br.com.saodimas.model.beans.ServicoObitoVO;
+import br.com.saodimas.model.dao.ApoliceDAO;
+import br.com.saodimas.model.dao.AssociadoDAO;
+import br.com.saodimas.model.dao.ObitoDAO;
+import br.com.saodimas.model.dao.ProdutoObitoDAO;
+import br.com.saodimas.model.dao.ServicoObitoDAO;
+import br.com.saodimas.view.components.panel.obito.ConsultaObitoPanel;
+
+public class ObitoDAOImpl implements ObitoDAO{
+
+	public void delete(ObitoVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+		
+		try{
+			ServicoObitoDAO servicoPlanoDAO = new ServicoObitoDAOImpl();
+			servicoPlanoDAO.deleteAllServicoObitoByObito(entity, conn);
+			
+			ProdutoObitoDAO produtoObitoDAO = new ProdutoObitoDAOImpl();
+			produtoObitoDAO.deleteAllProdutoObitoByObito(entity, conn);
+			
+			String sql = "DELETE FROM OBITO WHERE ID_OBITO = ? ";
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, entity.getId());
+			stmt.executeUpdate();
+			
+			conn.commit();
+		}finally{
+			if(stmt != null)
+				stmt.close();
+		}
+		
+	}
+
+	public List<ObitoVO> findAll(Connection conn) throws SQLException {
+		
+		List<ObitoVO> list = new ArrayList<ObitoVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM OBITO";
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				list.add(this.createVOFromResultSet(rs, conn));
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+
+	}
+
+	public void save(ObitoVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "INSERT INTO OBITO" +
+					" (ID_ASSOCIADO," +
+					" ID_APOLICE," +
+					" DATA_OBITO," +
+					" CAUSA," +
+					" NUMERO_ATESTADO," +
+					" DATA_EXPEDICAO)" +
+					" VALUES (?,?,?,?,?,?)";
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setInt(1,entity.getAssociado().getId());
+			stmt.setInt(2,entity.getApolice().getId());
+			stmt.setDate(3, entity.getData() != null ? new Date(entity.getData().getTime()) : null);
+			stmt.setString(4,entity.getCausa());
+			stmt.setString(5,entity.getNumeroAtestado());
+			stmt.setDate(6, entity.getDataExpedicao() != null ? new Date(entity.getDataExpedicao().getTime()) : null);
+			
+			stmt.executeUpdate();
+			conn.commit();
+			
+			entity.setId(this.getIdInserido(conn));
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+
+		
+	}
+
+	public void update(ObitoVO entity, Connection conn) throws SQLException {
+		
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = 
+				    " UPDATE OBITO SET " +
+					" ID_ASSOCIADO = ?, " +
+					" ID_APOLICE = ?, " +
+					" DATA_OBITO = ?, " +
+					" CAUSA = ?, " +
+					" NUMERO_ATESTADO = ?, " +
+					" DATA_EXPEDICAO = ? "+
+					" WHERE ID_OBITO = ?";
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setInt(1,entity.getAssociado().getId());
+			stmt.setInt(2,entity.getApolice().getId());
+			stmt.setDate(3, entity.getData() != null ? new Date(entity.getData().getTime()) : null);
+			stmt.setString(4,entity.getCausa());
+			stmt.setString(5,entity.getNumeroAtestado());
+			stmt.setDate(6, entity.getDataExpedicao() != null ? new Date(entity.getDataExpedicao().getTime()) : null);
+			stmt.setInt(7,entity.getId());
+			
+			stmt.executeUpdate();
+			conn.commit();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		
+		
+	}
+	
+	private ObitoVO createVOFromResultSet(ResultSet rs, Connection conn) throws SQLException
+	{
+		ObitoVO vo = new ObitoVO();
+		
+		
+		AssociadoDAO assDao = new AssociadoDAOImpl();
+		int id_ass = rs.getInt(ObitoVO.ID_ASSOCIADO);
+		if(id_ass > 0)
+			vo.setAssociado(assDao.findById(id_ass, conn));
+		
+		vo.setCausa(rs.getString(ObitoVO.CAUSA));
+		vo.setData(rs.getDate(ObitoVO.DATA_OBITO));
+		vo.setDataExpedicao(rs.getDate(ObitoVO.DATA_EXPEDICAO));
+		vo.setId(rs.getInt(ObitoVO.ID_OBITO));
+		vo.setNumeroAtestado(rs.getString(ObitoVO.NUMERO_ATESTADO));
+		
+		ServicoObitoDAO servicoDAO = new ServicoObitoDAOImpl();
+		List<ServicoObitoVO> list =  servicoDAO.getAllServicoObitoByObito(vo, conn);
+		vo.setServicos((list));
+		
+		ProdutoObitoDAO produtoDAO = new ProdutoObitoDAOImpl();
+		List<ProdutoObitoVO> listP = produtoDAO.getAllProdutoObitoByObito(vo, conn);
+		vo.setProdutos((listP));
+		
+		ApoliceDAO apoliceDAO = new ApoliceDAOImpl();
+		vo.setApolice(apoliceDAO.carregarApoliceSimples(rs.getInt(ObitoVO.ID_APOLICE), conn));
+		
+		return vo;
+	}
+
+
+	public ObitoVO findById(Integer id, Connection conn) throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM OBITO WHERE ID_OBITO = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1,id);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				return this.createVOFromResultSet(rs, conn);
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return null;
+	}
+
+	public List<ObitoVO> getAllObitosByApolice(ApoliceVO apolice,
+			Connection conn) throws SQLException {
+		
+		List<ObitoVO> list = new ArrayList<ObitoVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM OBITO WHERE ID_APOLICE = ? ";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, apolice.getId());
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				list.add(this.createVOFromResultSet(rs, conn));
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+
+	}
+
+	public void deleteAllObitosByApolice(ApoliceVO apolice, Connection conn)
+			throws SQLException {
+		
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "DELETE FROM OBITO WHERE ID_APOLICE = ? ";
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, apolice.getId());
+			stmt.executeUpdate();
+			conn.commit();
+		}finally{
+			if(stmt != null)
+				stmt.close();
+		}
+		
+	}
+	
+private int getIdInserido(Connection conn) throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		String sql = " SELECT @@IDENTITY AS ID FROM OBITO";
+		
+		stmt = conn.prepareStatement(sql);
+		rs = stmt.executeQuery();
+		
+		int id = 0;
+		while(rs.next())
+			id = rs.getInt("ID");
+		
+		return id;
+			
+		
+	}
+
+public ObitoVO getObitoByDependente(AssociadoVO dependente, Connection conn)
+		throws SQLException {
+	ResultSet rs = null;
+	PreparedStatement stmt = null;
+	
+	try{
+		String sql = "SELECT * FROM OBITO WHERE ID_ASSOCIADO = ?";
+		stmt = conn.prepareStatement(sql);
+		stmt.setInt(1,dependente.getId());
+		rs = stmt.executeQuery();
+		
+		while(rs.next())
+		{
+			return this.createVOFromResultSet(rs, conn);
+		}
+		
+	}finally{
+		if(stmt != null)
+			stmt.close();
+		if(rs != null)
+			rs.close();
+	}
+	
+	return null;
+}
+
+	@Override
+	public List<ObitoVO> consultaObito(String tipo, Object[] parametros, CidadeVO cidade,
+			Connection conn) throws SQLException {
+
+		String sql = " SELECT * FROM OBITO";
+
+		if(tipo.equals(ConsultaObitoPanel.OPCOES_CONSULTA[ConsultaObitoPanel.DATA]))
+		{
+			
+				boolean temWhere = false; 
+				if(parametros[0] != null)
+				{
+					sql = "SELECT * FROM OBITO WHERE DATA_OBITO >= '" + parametros[0] + "'";
+					temWhere = true;
+				}
+				if(parametros[1] != null)
+				{
+					if(!temWhere)
+						sql = " SELECT * FROM OBITO WHERE ";
+					else
+						sql += " AND ";
+					
+					sql += " DATA_OBITO <= '" + parametros[1] + "'";
+				}
+						
+		}else if(tipo.equals(ConsultaObitoPanel.OPCOES_CONSULTA[ConsultaObitoPanel.NOME]))
+		{
+			sql = " SELECT * FROM OBITO OB INNER JOIN ASSOCIADO AS ON OB.ID_ASSOCIADO = AS.ID_ASSOCIADO WHERE AS.NOME LIKE '%" + parametros[0] +"%' ";
+		}
+		
+		else if(tipo.equals(ConsultaObitoPanel.OPCOES_CONSULTA[ConsultaObitoPanel.CONTRATO]))
+		{
+				sql = " SELECT * FROM OBITO OB INNER JOIN APOLICE AP ON OB.ID_APOLICE = AP.ID_APOLICE WHERE AP.NUM LIKE '%" + parametros[0] +"%' ";
+		}
+		
+		if(cidade != null && cidade.getId() != null)
+		{
+			sql += " AND ID_CIDADE = " + cidade.getId();
+		}
+		
+		sql += " ORDER BY DATA_OBITO";
+		
+		List<ObitoVO> list = new ArrayList<ObitoVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				list.add(this.createVOFromResultSet(rs, conn));
+			}
+
+		} finally {
+			if (stmt != null)
+				stmt.close();
+			if (rs != null)
+				rs.close();
+		}
+
+		return list;
+
+			
+	}
+
+	
+	
+}

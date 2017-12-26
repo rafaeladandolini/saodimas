@@ -1,0 +1,158 @@
+package br.com.saodimas.view.components.panel.apolice;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.CidadeVO;
+import br.com.saodimas.relatorio.GeradorRelatorio;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+
+@SuppressWarnings("serial")
+public class CarteirinhasQuantidadePanel extends JPanel {
+	private static final String MENSAGEM_PADRAO = " ";
+	
+	private BarraNotificacao barNotificacao;
+	private JComboBox cbCidades;
+	private JButton btCancelar;
+	private JButton btOk;
+
+	private JLabel lbCidades;
+	
+	private static final Dimension DLABEL = new Dimension(120,22);
+	private static final Dimension DFIELDM = new Dimension(115,22);
+
+	public CarteirinhasQuantidadePanel() {
+		initialize();
+		configure();
+	}
+
+	public void limparCampos() {
+		cbCidades.setSelectedIndex(1);
+		barNotificacao.escondeMensagem();
+	}
+	
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+
+		lbCidades = new JLabel("Cidade: ", JLabel.RIGHT);
+		lbCidades.setPreferredSize(DLABEL);
+		lbCidades.setMinimumSize(DLABEL);
+
+		List<CidadeVO> list = Controller.getInstance().getCidadeAll();
+		CidadeVO[] array = new CidadeVO[list.size()];
+		
+		cbCidades = new JComboBox(list.toArray(array));
+		cbCidades.setSelectedIndex(0);
+		cbCidades.setPreferredSize(DFIELDM);
+		cbCidades.setMinimumSize(DFIELDM);
+				
+		btCancelar = new JButton("Cancelar", new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+
+		btOk = new JButton("Enviar", new ImageIcon("imagens/imprimir.gif"));
+		btOk.addActionListener(new EventoBotaoControle());
+		btOk.setHorizontalAlignment(JButton.LEFT);
+	}
+
+	private Component getPainelPrincipal(){
+		Component c = getParent();
+		while (c != null){
+			if (c.getClass() == ApoliceMainPanel.class) return c;
+			c = c.getParent();
+		}
+
+		return c;
+	}
+	
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infApolice = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+
+		c.gridy = 0; infApolice.add(lbCidades, c);
+		
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		c.gridy = 0; infApolice.add(cbCidades, c);
+		
+
+		infApolice.setBorder(BorderFactory.createTitledBorder("Parâmetros da consulta"));
+		adicionarAtalhosComandos(infApolice);
+
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(btOk);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+
+		JPanel panelApolice = new JPanel(new BorderLayout());
+		panelApolice.add(barNotificacao, BorderLayout.NORTH);
+		panelApolice.add(infApolice, BorderLayout.CENTER);
+		panelApolice.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelApolice);
+
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelApolice);
+		adicionarAtalhosComandos(formPrincipal);
+
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+	}
+
+	private void adicionarAtalhosComandos(JPanel panel){
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter(){
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) btOk.doClick();
+					else super.keyPressed(e);
+				}
+			});
+		}
+	}
+
+
+	private class EventoBotaoControle implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			ApoliceMainPanel c = (ApoliceMainPanel)getPainelPrincipal();		
+			if (e.getSource() == btCancelar)
+			{
+				c.getIframeConsultaRelatorioApolice().setVisible(false);
+			}
+			else if (e.getSource() == btOk)
+			{
+				CidadeVO cidade = (CidadeVO)cbCidades.getSelectedItem();
+				new GeradorRelatorio().gerar("RelatorioApoliceCidade.jasper", Controller.getInstance().listApoliceOrderByCidade(cidade));
+			}
+
+		}
+	}
+}

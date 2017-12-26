@@ -1,0 +1,224 @@
+package br.com.saodimas.model.dao.impl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.saodimas.model.beans.ObitoVO;
+import br.com.saodimas.model.beans.ProdutoCompraVO;
+import br.com.saodimas.model.beans.ProdutoObitoVO;
+import br.com.saodimas.model.beans.ProdutoVO;
+import br.com.saodimas.model.dao.ProdutoCompraDAO;
+import br.com.saodimas.model.dao.ProdutoDAO;
+import br.com.saodimas.model.dao.ProdutoObitoDAO;
+
+public class ProdutoCompraDAOImpl implements ProdutoCompraDAO{
+	
+	public void delete(ProdutoCompraVO entity, Connection conn) throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "DELETE FROM PRODUTO_OBITO WHERE ID_PRODUTO_OBITO = ? ";
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, entity.getId());
+			stmt.executeUpdate();
+			conn.commit();
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+	}
+
+	public List<ProdutoCompraVO> findAll(Connection conn) throws SQLException{
+		
+		List<ProdutoObitoVO> list = new ArrayList<ProdutoObitoVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM PRODUTO_OBITO";
+			stmt = conn.prepareStatement(sql);
+			stmt.execute();
+			
+			rs = stmt.getResultSet();
+			
+			while(rs.next())
+				list.add(this.createVOFromResultSet(rs, conn));
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+	}
+
+	public void save(ProdutoCompraVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "INSERT INTO PRODUTO_OBITO" +
+					" (ID_PRODUTO," +
+					" ID_OBITO, " +
+					" QUANTIDADE, " +
+					" TOTAL, " +
+					" VALOR)" +
+					" VALUES (?,?,?,?,?)";
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setInt(1, entity.getProduto().getId());
+			stmt.setInt(2, entity.getObito().getId());
+			stmt.setInt(3, entity.getQuantidade());
+			stmt.setDouble(4, entity.getTotal());
+			stmt.setDouble(5, entity.getValor());
+						
+			stmt.executeUpdate();
+			conn.commit();
+		} finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		
+		
+	}
+
+	public void update(ProdutoCompraVO entity, Connection conn) throws SQLException {
+		PreparedStatement stmt = null;
+
+		try {
+			String sql = "UPDATE PRODUTO_OBITO SET " +
+						 " ID_PRODUTO = ?, " +
+						 " ID_OBITO = ?, " +
+						 " QUANTIDADE = ?, " +
+						 " TOTAL = ?, " +
+						 " VALOR = ? " + 
+						 " WHERE ID_PRODUTO_OBITO = ?";
+			
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setInt(1, entity.getProduto().getId());
+			stmt.setInt(2, entity.getObito().getId());
+			stmt.setInt(3, entity.getQuantidade());
+			stmt.setDouble(4, entity.getTotal());
+			stmt.setDouble(5, entity.getValor());
+			stmt.setInt(6, entity.getId());
+						
+			stmt.executeUpdate();
+			conn.commit();
+		}finally {
+			if (stmt != null)
+				stmt.close();
+		}
+		
+	}
+	
+	private ProdutoCompraVO createVOFromResultSet(ResultSet rs, Connection conn) throws SQLException
+	{
+		ProdutoObitoVO vo = new ProdutoObitoVO();
+		vo.setId(rs.getInt(ProdutoObitoVO.ID_PRODUTO_OBITO));
+		vo.setQuantidade(rs.getInt(ProdutoObitoVO.QUANTIDADE));
+		
+		int id_prod = rs.getInt(ProdutoObitoVO.ID_PRODUTO);
+		ProdutoDAO produtoDAO = new ProdutoDAOImpl();
+		ProdutoVO produto = produtoDAO.findById(id_prod, conn);
+		vo.setProduto(produto);
+		
+		vo.setTotal(rs.getDouble(ProdutoObitoVO.TOTAL));
+		vo.setValor(rs.getDouble(ProdutoObitoVO.VALOR));
+		
+		return vo;
+		
+	}
+
+	public ProdutoCompraVO findById(Integer id, Connection conn)
+			throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM PRODUTO_OBITO WHERE ID_PRODUTO_OBITO = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1,id);
+			rs = stmt.executeQuery();
+			
+			while(rs.next())
+			{
+				return this.createVOFromResultSet(rs, conn);
+			}
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return null;
+	}
+
+	public List<ProdutoCompraVO> getAllProdutoCompraByCompra(CompraVO compra, Connection conn) throws SQLException {
+		
+		List<ProdutoObitoVO> list = new ArrayList<ProdutoObitoVO>();
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "SELECT * FROM PRODUTO_OBITO WHERE ID_OBITO = ? ";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, obito.getId());
+			stmt.executeQuery();
+			
+			rs = stmt.getResultSet();
+			
+			while(rs.next())
+				list.add(this.createVOFromResultSet(rs, conn));
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+		return list;
+	}
+
+	public void deleteAllProdutoObitoByObito(ObitoVO obito, Connection conn)
+			throws SQLException {
+		
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
+		
+		try{
+			String sql = "DELETE FROM PRODUTO_OBITO WHERE ID_OBITO = ? ";
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1,obito.getId());
+			stmt.executeUpdate();
+			
+		}finally{
+			if(stmt != null)
+				stmt.close();
+			if(rs != null)
+				rs.close();
+		}
+		
+	}
+		
+}

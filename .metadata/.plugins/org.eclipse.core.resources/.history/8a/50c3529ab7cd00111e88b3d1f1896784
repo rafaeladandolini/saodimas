@@ -1,0 +1,272 @@
+package br.com.saodimas.view.components.panel.financeiro.compra;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ClienteVO;
+import br.com.saodimas.model.beans.CompraVO;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.view.components.iframe.CompraIFrame;
+import br.com.saodimas.view.components.iframe.CompraProdutoIFrame;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.panel.CustomLayeredPanel;
+import br.com.saodimas.view.components.table.CompraTable;
+import br.com.saodimas.view.components.table.model.CompraTableModel;
+
+
+
+@SuppressWarnings("serial")
+public class CompraMainPanel extends CustomLayeredPanel {
+	public static final String FORM_NAME = "Compras"; 
+	public static final String MENSAGEM_PADRAO = "   Pressione a tecla [F3] para Pesquisar, [INSERT] para Cadastrar e [ENTER] ou [DELETE] para editar/excluir um compra selecionado!";
+	
+	private BarraNotificacao barNotificacao;
+	private JButton btNovo;
+	private JButton btEditar;
+	private JButton btExcluir;
+	private JToolBar barControle;
+	
+	private CompraTable tbCompras;
+	private CompraIFrame iframeCompras;
+	
+	private AbstractButton ultimoComando;
+	
+	private static final Dimension DBUTTON = new Dimension(30,30);
+	
+	public CompraMainPanel(){
+		initialize();
+		configure();
+	}
+	
+	public void carregarCompras()
+	{
+		((CompraTableModel)tbCompras.getModel()).loadData(Controller.getInstance().getAllCompras());
+	}
+	
+	public CompraIFrame getIFrameCompra() {
+		return iframeCompras;
+	}
+
+	public void selecionaUltimoComando(){
+		if (ultimoComando != null){
+			if (ultimoComando != btEditar && ultimoComando != btExcluir){
+				tbCompras.getSelectionModel().clearSelection();
+				ultimoComando.requestFocus();
+			}
+			else tbCompras.requestFocus();
+		}
+	}	
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		btNovo.setEnabled(enabled);
+		btEditar.setEnabled(enabled && tbCompras.getSelectedRow() > -1);
+		btExcluir.setEnabled(enabled && tbCompras.getSelectedRow() > -1);
+		barControle.setEnabled(enabled);
+		tbCompras.setEnabled(enabled);
+		super.setEnabled(enabled);
+	}
+	
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if (visible){
+			carregarCompras();
+			barNotificacao.mostrarMensagem("", BarraNotificacao.DICA);
+		}
+	}
+
+	private void initialize() {
+		barNotificacao = new BarraNotificacao("");
+		int x = getDesktop().getWidth() / 2;
+		int y = getDesktop().getHeight() / 2;
+		
+		iframeCompras = new CompraIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				if (!flag) selecionaUltimoComando();
+				super.setVisible(flag);
+			}
+		};
+		iframeCompras.setLocation(x - iframeCompras.getSize().width / 2, y - iframeCompras.getSize().height / 2);
+			
+		iframeCompraProduto = new CompraProdutoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				super.setVisible(flag);
+				this.habilitarControles(false);
+			}
+		};
+		iframeCompraProduto.setLocation(x - iframeCompraProduto.getSize().width / 2, y - iframeCompraProduto.getSize().height / 2);
+		
+		
+		getDesktop().add(iframeCompras);
+				
+		tbCompras = new CompraTable();
+		tbCompras.getSelectionModel().addListSelectionListener(new EventoTabela());
+		tbCompras.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() > 1 && btEditar.isEnabled()) btEditar.doClick();
+				super.mouseClicked(e);
+			}
+		});
+		tbCompras.addKeyListener(new KeyAdapter(){
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) btEditar.doClick();
+				else if (e.getKeyCode() == KeyEvent.VK_DELETE) btExcluir.doClick();
+				else if (e.getKeyCode() == KeyEvent.VK_INSERT) btNovo.doClick();
+				super.keyPressed(e);
+			}
+		});
+		
+		btNovo = new JButton();
+		btNovo.setIcon(new ImageIcon("imagens/addEmployee.gif"));
+		btNovo.addActionListener(new EventoBotaoControle());
+		btNovo.setToolTipText("Cadastra uma  nova compra!");
+		btNovo.setPreferredSize(DBUTTON);
+		btNovo.addKeyListener(tbCompras.getKeyListeners()[0]);
+		
+		btEditar = new JButton();
+		btEditar.setIcon(new ImageIcon("imagens/edit.gif"));
+		btEditar.addActionListener(new EventoBotaoControle());
+		btEditar.setToolTipText("Edita os dados de uma compra!");
+		btEditar.setPreferredSize(DBUTTON);
+		btEditar.setEnabled(false);
+		btEditar.addKeyListener(tbCompras.getKeyListeners()[0]);
+		
+		btExcluir = new JButton();
+		btExcluir.setIcon(new ImageIcon("imagens/remove.gif"));
+		btExcluir.addActionListener(new EventoBotaoControle());
+		btExcluir.setToolTipText("Remove uma compra!");
+		btExcluir.setPreferredSize(DBUTTON);
+		btExcluir.setEnabled(false);
+		btExcluir.addKeyListener(tbCompras.getKeyListeners()[0]);
+		
+		barControle = new JToolBar();
+		barControle.setFloatable(false);
+		barControle.setOpaque(false);
+		barControle.setBorderPainted(false);
+		barControle.setBorder(BorderFactory.createEmptyBorder());
+		barControle.setMargin(new Insets(0, 0, 0, 0));
+		barControle.add(btNovo);
+		barControle.add(btEditar);
+		barControle.add(btExcluir);
+		
+		ultimoComando = btNovo;
+	}
+	
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infColaborador = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.LAST_LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(0, 1, 0, 1);
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = 0; infColaborador.add(barControle, c);
+		
+		JScrollPane depPanel = new JScrollPane(tbCompras);
+		depPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridx = 0;
+		c.gridy = 1; infColaborador.add(depPanel, c);
+		
+		infColaborador.setBorder(BorderFactory.createTitledBorder("Compras"));
+		
+		JPanel panelPrincipal = new JPanel(new GridBagLayout()); 
+		c = new GridBagConstraints();
+		
+		c.anchor = GridBagConstraints.CENTER;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 1, 1);
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = 0; panelPrincipal.add(barNotificacao, c);
+
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridx = 0;
+		c.gridy = 1; panelPrincipal.add(infColaborador, c);
+
+		getPainelPrincipal().add(panelPrincipal, BorderLayout.CENTER);
+	}
+	
+	public void mostrarMensagem(final String mensagem, final int tipoMensagem) {
+		barNotificacao.mostrarMensagem(mensagem, tipoMensagem);
+	}
+	
+	private class EventoTabela implements ListSelectionListener{
+		public void valueChanged(ListSelectionEvent arg0) {
+			btEditar.setEnabled(tbCompras.getSelectedRow() > -1);
+			btExcluir.setEnabled(tbCompras.getSelectedRow() > -1);
+		}
+	}
+	
+	private class EventoBotaoControle implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			ultimoComando = (AbstractButton)e.getSource();
+			
+			if (e.getSource() == btNovo){
+				iframeCompras.setCompra(null);
+				iframeCompras.setVisible(true);
+				iframeCompras.habilitarControles(false);				
+			}
+			else if (e.getSource() == btEditar){
+				int row = tbCompras.getSelectedRow();
+				CompraTableModel model = (CompraTableModel)tbCompras.getModel();
+				CompraVO dep = (CompraVO)model.getSelectedValue(row);
+				
+				iframeCompras.setCompra(dep);
+				iframeCompras.setVisible(true);
+				iframeCompras.habilitarControles(false);				
+			}
+			else{
+				if (mostraConfirmacao("Confirmação", "Confirma a exclusão da compra?", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+					int row = tbCompras.getSelectedRow();
+					CompraTableModel model = (CompraTableModel)tbCompras.getModel();
+					ClienteVO col = (ClienteVO)model.getSelectedValue(row);
+					try{
+						Controller.getInstance().deleteCliente(col);
+					} catch (MensagemSaoDimasException ex) {
+						barNotificacao.mostrarMensagem(ex.getMessage(),	BarraNotificacao.ERRO);
+					}
+					carregarCompras();
+				}
+			}
+		}
+	}
+
+}

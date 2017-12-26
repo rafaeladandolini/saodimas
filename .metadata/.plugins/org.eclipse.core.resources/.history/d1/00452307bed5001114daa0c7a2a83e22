@@ -1,0 +1,62 @@
+package br.com.saodimas.model.beans;
+
+import java.io.Serializable;
+
+public class ProdutoVendaVO implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	public static final String TABELA = "PRODUTO_VENDA";
+	
+	public static final String PRODUTO_VENDA = "ID_PRODUTO_VENDA";
+	public static final String ID_VENDA = "ID_VENDA";
+	public static final String ID_PRODUTO = "ID_PRODUTO";
+	public static final String QUANTIDADE = "QUANTIDADE";
+	public static final String VALOR = "VALOR";
+	public static final String TOTAL = "TOTAL";
+
+	private Integer id;
+	private ProdutoVO produto;
+	private VendaVO venda;
+	private int quantidade;
+	private Double valor;
+	private Double total;
+	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public ProdutoVO getProduto() {
+		return produto;
+	}
+	public void setProduto(ProdutoVO produto) {
+		this.produto = produto;
+	}
+	public CompraVO getCompra() {
+		return compra;
+	}
+	public void setCompra(CompraVO compra) {
+		this.compra = compra;
+	}
+	public int getQuantidade() {
+		return quantidade;
+	}
+	public void setQuantidade(int quantidade) {
+		this.quantidade = quantidade;
+	}
+	public Double getValorCusto() {
+		return valorCusto;
+	}
+	public void setValorCusto(Double valorCusto) {
+		this.valorCusto = valorCusto;
+	}
+	public Double getValorVenda() {
+		return valorVenda;
+	}
+	public void setValorVenda(Double valorVenda) {
+		this.valorVenda = valorVenda;
+	}
+
+	
+}

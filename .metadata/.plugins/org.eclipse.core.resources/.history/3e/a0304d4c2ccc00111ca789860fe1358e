@@ -1,0 +1,245 @@
+package br.com.saodimas.view.components.panel.financeiro.empresa;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ApoliceVO;
+import br.com.saodimas.model.beans.CidadeVO;
+import br.com.saodimas.model.beans.ClienteVO;
+import br.com.saodimas.model.beans.EmpresaCompraVO;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.view.components.document.CustomDocument;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.panel.financeiro.cliente.ClienteMainPanel;
+import br.com.saodimas.view.components.text.CEPTextField;
+import br.com.saodimas.view.components.text.CPFTextField;
+import br.com.saodimas.view.components.text.FoneTextField;
+import br.com.saodimas.view.util.ListasComuns;
+
+@SuppressWarnings("serial")
+public class EmpresaCompraPanel extends JPanel {
+	private static final String MENSAGEM_PADRAO = "   (*) Preenchimento obrigatório";
+
+	private EmpresaCompraVO empresaCompra;
+	private BarraNotificacao barNotificacao;
+		
+	private JTextField txtNome;
+	private FoneTextField txtContato;
+  	
+	private JButton btCancelar;
+	private JButton btSalvar;
+	
+	private JLabel lbNome;
+	private JLabel lbContato;
+	
+	
+	private static final Dimension DLABEL = new Dimension(120,22);
+	private static final Dimension DFIELDM = new Dimension(200,22);
+	
+	public EmpresaCompraPanel(){
+		initialize();
+		configure();
+	}
+
+	public EmpresaCompraVO getEmpresaCompraVO() {
+		return empresaCompra;
+	}
+
+	public void setEmpresaCompra(EmpresaCompraVO empresa) {
+		this.empresaCompra = empresa;
+		if(empresa != null){
+			txtNome.setText(empresa.getNome());
+			txtContato.setText(empresa.getContato());
+		}
+		else{limparCampos();}
+	}
+
+	public void limparCampos() {
+	
+		txtNome.setText("");
+		txtContato.setText("");		
+	}
+	
+	public void focoPadrao(){
+		txtNome.requestFocus();
+	}
+	
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+		
+		lbNome = new JLabel("Nome: ", JLabel.RIGHT);
+		lbNome.setPreferredSize(DLABEL);
+		lbNome.setMinimumSize(DLABEL);
+		
+		CustomDocument nomeDoc = new CustomDocument(150);
+		txtNome = new JTextField();
+		txtNome.setDocument(nomeDoc);
+		txtNome.setPreferredSize(DFIELDM);
+		
+		lbContato = new JLabel("Contato: ", JLabel.RIGHT);
+		lbContato.setPreferredSize(DLABEL);
+		lbContato.setMinimumSize(DLABEL);
+		
+		txtContato = new FoneTextField();
+		txtContato.setPreferredSize(DFIELDM);
+				
+		btCancelar = new JButton("Cancelar", new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+		
+		btSalvar = new JButton("Salvar", new ImageIcon("imagens/save.gif"));
+		btSalvar.addActionListener(new EventoBotaoControle());
+		btSalvar.setHorizontalAlignment(JButton.LEFT);
+	}
+	
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infUser = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+
+		c.gridy = 0; infUser.add(lbNome, c);
+		c.gridy = 1; infUser.add(lbContato);
+						
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		c.gridy = 0; infUser.add(txtNome, c);
+		c.gridy = 1; infUser.add(txtContato, c);
+				
+		
+		infUser.setBorder(BorderFactory.createTitledBorder("Empresa"));
+		adicionarAtalhosComandos(infUser);
+		
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(btSalvar);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+		
+		JPanel panelColaborador = new JPanel(new BorderLayout());
+		panelColaborador.add(barNotificacao, BorderLayout.NORTH);
+		panelColaborador.add(infUser, BorderLayout.CENTER);
+		panelColaborador.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelColaborador);
+		
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelColaborador);
+		adicionarAtalhosComandos(formPrincipal);
+		
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+	}
+	
+	private void adicionarAtalhosComandos(JPanel panel){
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter(){
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) btSalvar.doClick();
+					else super.keyPressed(e);
+				}
+			});
+		}
+	}
+	
+	private Component getPainelPrincipal(){
+		Component c = getParent();
+		while (c != null){
+			if (c instanceof EmpresaCompraMainPanel) return c;
+			c = c.getParent();
+		}
+		return c;
+	}	
+	
+
+	private class EventoBotaoControle implements ActionListener{
+	
+		public void actionPerformed(ActionEvent e) {
+			
+			Component c = getPainelPrincipal();
+			if (e.getSource() == btCancelar){
+				try{
+					((EmpresaCompraMainPanel)c).getIframeEmpresaCompra().setVisible(false);
+				}
+				catch(ClassCastException cex){
+					cex.printStackTrace();
+				}
+			}else
+			if (e.getSource() == btSalvar)
+			{
+				salvarEmpresaCompra();	
+			}
+		}
+	}
+
+	private void salvarEmpresaCompra()
+	{
+		EmpresaCompraVO novaEmpresaCompra = new EmpresaCompraVO();
+		Component c = getPainelPrincipal();
+		
+		novaEmpresaCompra.setBairro(txtNome.getText());
+		novaEmpresaCompra.setCep(txtContato.getText());
+		
+		
+		try{
+			if (empresaCompra != null) {
+				novoCliente.setId(empresaCompra.getId());
+				Controller.getInstance().updateCliente(novoCliente);
+				((ClienteMainPanel) c).mostrarMensagem(
+						"Alterações efetuadas com sucesso.",
+						barNotificacao.INFO);
+			} else {
+				Controller.getInstance().insertCliente(novoCliente);
+				((ClienteMainPanel) c).mostrarMensagem(
+						"Cadastro efetuado com sucesso.", barNotificacao.INFO);
+			}
+
+			((ClienteMainPanel) c).carregarClientesTable();
+			((ClienteMainPanel) c).getIframeCliente().setVisible(false);
+
+		} catch (MensagemSaoDimasException ex) {
+			barNotificacao
+					.mostrarMensagem(ex.getMessage(), barNotificacao.ERRO);
+			ex.printStackTrace();
+		}
+	}
+	
+	private class EventoComboBox implements ItemListener
+	{
+		public void itemStateChanged(ItemEvent e) {
+			String estado = e.getItem().toString();
+			loadCidadeByEstado(estado);
+		}
+		
+	}
+}	

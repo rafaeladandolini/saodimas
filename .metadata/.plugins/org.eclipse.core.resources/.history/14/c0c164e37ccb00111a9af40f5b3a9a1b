@@ -1,0 +1,428 @@
+package br.com.saodimas.view.components.panel.cliente;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.CidadeVO;
+import br.com.saodimas.model.beans.ClienteVO;
+import br.com.saodimas.view.components.document.CustomDocument;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.text.CEPTextField;
+import br.com.saodimas.view.components.text.CPFTextField;
+import br.com.saodimas.view.components.text.FoneTextField;
+import br.com.saodimas.view.util.ListasComuns;
+
+@SuppressWarnings("serial")
+public class ClientePanel extends JPanel {
+	private static final String MENSAGEM_PADRAO = "   (*) Preenchimento obrigatório";
+
+	private ClienteVO cliente;
+	private BarraNotificacao barNotificacao;
+		
+	private JTextField txtNome;
+	private JTextField txtEndereco;
+	private JTextField txtBairro;
+	private CEPTextField txtCEP;
+	private FoneTextField txtContato;
+  	private FoneTextField txtContato2;
+	private JComboBox cbCidades;
+	private JComboBox cbEstado;
+	private JComboBox cbStatus;
+	private JTextArea txtaObs;
+	private JTextField txtApolice;
+	private JTextField txtTitularApolice;
+	private CPFTextField txtCPF;
+	private JTextField txtRG;
+	
+	private JButton btCarregarApolice;
+	private JButton btCancelar;
+	private JButton btSalvar;
+	
+	private JLabel lbNome;
+	private JLabel lbEndereco;
+	private JLabel lbBairro;
+	private JLabel lbCEP;
+	private JLabel lbContato;
+	private JLabel lbContato2;
+	private JLabel lbCidade;
+	private JLabel lbEstado;
+	private JLabel lbStatus;
+	//private JLabel lbObservacao;
+	private JLabel lbNumApolice;
+	private JLabel lbTitularApolice;
+	private JLabel lbCPF;
+	private JLabel lbRG;
+	
+	
+	private static final Dimension DLABEL = new Dimension(120,22);
+	private static final Dimension DFIELDM = new Dimension(115,22);
+	
+	public ClientePanel() {
+		initialize();
+		configure();
+	}
+
+	public ClienteVO getClienteVO() {
+		return cliente;
+	}
+
+	public void setCliente(ClienteVO cliente) {
+		this.cliente = cliente;
+		if(cliente != null){
+			txtaObs.setText(cliente.getObservacao());
+			if(cliente.getApolice() != null){
+				txtApolice.setText(cliente.getApolice().getNumeroContrato());
+				txtTitularApolice.setText(cliente.getApolice().getTitular().getNome());
+			}
+			txtBairro.setText(cliente.getBairro());
+			txtCEP.setText(cliente.getCep());
+			txtContato.setText(cliente.getContato());
+			txtContato2.setText(cliente.getContato2());
+			txtCPF.setText(cliente.getCpf());
+			txtEndereco.setText(cliente.getEndereco());
+			txtNome.setText(cliente.getNome());
+			txtRG.setText(cliente.getRg());
+			cbEstado.setSelectedItem(cliente.getCidade().getEstado());
+			cbStatus.setSelectedItem(cliente.getStatus());
+			cbCidades.setSelectedItem(cliente.getCidade().getNome());
+		}
+		else{limparCampos();}
+	}
+
+	public void limparCampos() {
+	
+		txtaObs.setText("");
+		txtApolice.setText("");
+		txtBairro.setText("");
+		txtCEP.setText("");
+		txtContato.setText("");
+		txtContato2.setText("");
+		txtCPF.setText("");
+		txtEndereco.setText("");
+		txtNome.setText("");
+		txtRG.setText("");
+		txtTitularApolice.setText("");
+		cbEstado.setSelectedItem("PR");
+		cbStatus.setSelectedIndex(0);
+	}
+	
+	private void loadCidadeByEstado(String estado)
+	{
+		List<CidadeVO> list = Controller.getInstance().getCidadeAllByEstado(estado);
+		cbCidades.removeAllItems();
+		for (int i=0; i< list.size(); i++) {
+			cbCidades.addItem(list.get(i));
+		}
+		cbCidades.repaint();
+	}
+	
+	public void focoPadrao(){
+		txtNome.requestFocus();
+	}
+	
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+		
+		lbNome = new JLabel("Nome: ", JLabel.RIGHT);
+		lbNome.setPreferredSize(DLABEL);
+		lbNome.setMinimumSize(DLABEL);
+		
+		CustomDocument nomeDoc = new CustomDocument(150);
+		txtNome = new JTextField();
+		txtNome.setDocument(nomeDoc);
+		txtNome.setPreferredSize(DFIELDM);
+		
+		lbEndereco = new JLabel("Endereço: ", JLabel.RIGHT);
+		lbEndereco.setPreferredSize(DLABEL);
+		lbEndereco.setMinimumSize(DLABEL);
+		
+		CustomDocument endDoc = new CustomDocument(200);
+		txtEndereco = new JTextField();
+		txtEndereco.setDocument(endDoc);
+		txtEndereco.setPreferredSize(DFIELDM);
+				
+		lbBairro = new JLabel("Bairro: ", JLabel.RIGHT);
+		lbBairro.setPreferredSize(DLABEL);
+		lbBairro.setMinimumSize(DLABEL);
+		
+		CustomDocument bairroDoc = new CustomDocument(150);
+		txtBairro = new JTextField();
+		txtBairro.setDocument(bairroDoc);
+		txtBairro.setPreferredSize(DFIELDM);
+			
+		lbCEP = new JLabel("CEP: ", JLabel.RIGHT);
+		lbCEP.setPreferredSize(DLABEL);
+		lbCEP.setMinimumSize(DLABEL);
+		
+		txtCEP = new CEPTextField();
+		txtCEP.setPreferredSize(DFIELDM);
+		
+		lbContato = new JLabel("Contato: ", JLabel.RIGHT);
+		lbContato.setPreferredSize(DLABEL);
+		lbContato.setMinimumSize(DLABEL);
+
+		txtContato = new FoneTextField();
+		txtContato.setPreferredSize(DFIELDM);
+		txtContato.setMinimumSize(DFIELDM);
+
+		lbContato2 = new JLabel("Contato 2:  ", JLabel.RIGHT);
+		lbContato2.setPreferredSize(DLABEL);
+		lbContato2.setMinimumSize(DLABEL);
+
+		txtContato2 = new FoneTextField();
+		txtContato2.setPreferredSize(DFIELDM);
+		txtContato2.setMinimumSize(DFIELDM);
+		
+		lbStatus = new JLabel("Status:  ", JLabel.RIGHT);
+		lbStatus.setPreferredSize(DLABEL);
+		lbStatus.setMinimumSize(DLABEL);
+
+		cbStatus = new JComboBox(ListasComuns.STATUS_CLIENTE);
+		cbStatus.setPreferredSize(DFIELDM);
+		cbStatus.setMinimumSize(DFIELDM);
+		
+		txtaObs = new JTextArea();
+		txtaObs.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+		txtaObs.setDocument(new CustomDocument(255));
+		txtaObs.setMinimumSize(DFIELDM);
+		
+		lbNumApolice = new JLabel("Núm. Apolice  ", JLabel.RIGHT);
+		lbNumApolice.setPreferredSize(DLABEL);
+		lbNumApolice.setMinimumSize(DLABEL);
+
+		txtApolice = new JTextField();
+		txtApolice.setPreferredSize(DFIELDM);
+		txtApolice.setMinimumSize(DFIELDM);
+		txtApolice.setEditable(true);
+		
+		lbTitularApolice = new JLabel("Titular: *", JLabel.RIGHT);
+		lbTitularApolice.setPreferredSize(DLABEL);
+		lbTitularApolice.setMinimumSize(DLABEL);
+
+		txtTitularApolice = new JTextField();
+		txtTitularApolice.setPreferredSize(DFIELDM);
+		txtTitularApolice.setEditable(false);
+		
+		lbCidade = new JLabel("Cidade: *", JLabel.RIGHT);
+		lbCidade.setPreferredSize(DLABEL);
+		lbCidade.setMinimumSize(DLABEL);
+
+		cbCidades = new JComboBox();
+		cbCidades.setPreferredSize(DFIELDM);
+		
+		lbEstado = new JLabel("Estado: *", JLabel.RIGHT);
+		lbEstado.setPreferredSize(DLABEL);
+		lbEstado.setMinimumSize(DLABEL);
+				
+		cbEstado= new JComboBox(ListasComuns.ESTADOS);
+		cbEstado.setSelectedItem("PR");
+		cbEstado.addItemListener(new EventoComboBox());
+		
+		lbCPF = new JLabel("C.P.F.: ", JLabel.RIGHT);
+		lbCPF.setPreferredSize(DLABEL);
+		lbCPF.setMinimumSize(DLABEL);
+
+		txtCPF = new CPFTextField();
+		txtCPF.setPreferredSize(DFIELDM);
+		txtCPF.setMinimumSize(DFIELDM);
+
+		lbRG = new JLabel("RG.: ", JLabel.RIGHT);
+		lbRG.setPreferredSize(DLABEL);
+		lbRG.setMinimumSize(DLABEL);
+
+		CustomDocument rgDoc = new CustomDocument(15);
+		txtRG = new JTextField();
+		txtRG.setPreferredSize(DFIELDM);
+		txtRG.setDocument(rgDoc);
+		txtRG.setMinimumSize(DFIELDM);
+		
+		btCarregarApolice = new JButton("Carregar", new ImageIcon("imagens/search.gif"));
+		btCarregarApolice.addActionListener(new EventoBotaoControle());
+		btCarregarApolice.setHorizontalAlignment(JButton.LEFT);
+		
+		btCancelar = new JButton("Cancelar", new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+		
+		btSalvar = new JButton("Salvar", new ImageIcon("imagens/save.gif"));
+		btSalvar.addActionListener(new EventoBotaoControle());
+		btSalvar.setHorizontalAlignment(JButton.LEFT);
+	}
+	
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infUser = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+
+		c.gridy = 0; infUser.add(lbStatus, c);
+		c.gridy = 1; infUser.add(lbNome, c);
+		c.gridy = 2; infUser.add(lbCPF, c);
+		c.gridy = 3; infUser.add(lbRG, c);
+		c.gridy = 4; infUser.add(lbEndereco, c);
+		c.gridy = 5; infUser.add(lbBairro, c);
+		c.gridy = 6; infUser.add(lbCEP, c);
+		c.gridy = 7; infUser.add(lbCidade, c);
+		c.gridy = 8; infUser.add(lbContato, c);
+		c.gridy = 9; infUser.add(lbContato2, c);	
+		c.gridy = 10; infUser.add(lbNumApolice, c);	
+		c.gridy = 11; infUser.add(lbTitularApolice, c);	
+		
+				
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		c.gridy = 0; infUser.add(cbStatus, c);
+		
+		c.gridy = 1; infUser.add(txtNome, c);
+		c.gridy = 2; infUser.add(txtCPF, c);
+		c.gridy = 3; infUser.add(txtRG, c);
+		c.gridy = 4; infUser.add(txtEndereco, c);
+		c.gridy = 5; infUser.add(txtBairro, c);
+		c.gridy = 6; infUser.add(txtCEP, c);
+		c.gridy = 7; infUser.add(cbEstado);
+		c.gridy = 8; infUser.add(cbCidades, c);
+		c.gridy = 9; infUser.add(txtContato, c);
+		c.gridy = 10; infUser.add(txtContato2, c);
+		c.gridy = 11; infUser.add(txtApolice, c);
+		c.gridy = 12; infUser.add(txtTitularApolice, c);
+		c.gridy = 13; infUser.add(txtaObs, c);
+		
+		
+		infUser.setBorder(BorderFactory.createTitledBorder("Cliente"));
+		adicionarAtalhosComandos(infUser);
+		
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(btSalvar);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+		
+		JPanel panelColaborador = new JPanel(new BorderLayout());
+		panelColaborador.add(barNotificacao, BorderLayout.NORTH);
+		panelColaborador.add(infUser, BorderLayout.CENTER);
+		panelColaborador.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelColaborador);
+		
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelColaborador);
+		adicionarAtalhosComandos(formPrincipal);
+		
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+	}
+	
+	private void adicionarAtalhosComandos(JPanel panel){
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter(){
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) btSalvar.doClick();
+					else super.keyPressed(e);
+				}
+			});
+		}
+	}
+	
+	private Component getPainelPrincipal(){
+		Component c = getParent();
+		while (c != null){
+			if (c instanceof ClienteMainPanel) return c;
+			c = c.getParent();
+		}
+		return c;
+	}	
+	
+
+	
+	/*private boolean validaCampos()
+	{
+		String erros = "";
+		erros += ValidaApolice.validarPlano((PlanoVO)cbPlano.getSelectedItem());
+		if (erros.length() != 0)
+			btErroPlano.setMensagem(ValidaApolice.validarPlano((PlanoVO)cbPlano.getSelectedItem()));
+		else {
+			isPJ = ((PlanoVO)cbPlano.getSelectedItem()).isEmpresarial();
+			if (isPJ){
+				erros += ValidaApolice.validaRazaoSocial(txtRazaoSocial.getText());
+				btErroRazaoSocial.setMensagem(ValidaApolice.validaRazaoSocial(txtRazaoSocial.getText()));
+
+				erros += ValidaApolice.validaCNPJ(txtCNPJ.getText());
+				btErroCNPJ.setMensagem(ValidaApolice.validaCNPJ(txtCNPJ.getText()));
+			}
+			else{
+				btErroRazaoSocial.setMensagem(null);
+				btErroCNPJ.setMensagem(null);
+			}
+			if (erros.length() > 0) barNotificacao.mostrarMensagem("Erro ao submeter os dados! A causa será exibida clicando no botão ao lado de cada campo!", BarraNotificacao.AVISO);
+			else{
+				btErroPlano.setMensagem(null);a
+				btErroRazaoSocial.setMensagem(null);
+				btErroCNPJ.setMensagem(null);
+		return false;
+	}*/
+	
+	private class EventoBotaoControle implements ActionListener{
+	
+		public void actionPerformed(ActionEvent e) {
+			
+			Component c = getPainelPrincipal();
+			if (e.getSource() == btCancelar){
+				try{
+					((ClienteMainPanel)c).getIframeCliente().setVisible(false);
+				}
+				catch(ClassCastException cex){
+					cex.printStackTrace();
+				}
+			}else
+			if (e.getSource() == btSalvar)
+			{
+				salvarCliente();	
+			}
+		}
+	}
+	
+	private void salvarCliente()
+	{
+		
+	}
+	
+	private class EventoComboBox implements ItemListener
+	{
+		public void itemStateChanged(ItemEvent e) {
+			String estado = e.getItem().toString();
+			loadCidadeByEstado(estado);
+		}
+		
+	}
+}	

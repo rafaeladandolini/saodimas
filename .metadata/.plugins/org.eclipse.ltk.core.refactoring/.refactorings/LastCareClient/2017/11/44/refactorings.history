@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;LastCareClient/imagens/24311_Sao_Dimas_200517.png&apos; to &apos;logoA.png&apos;" description="Rename resource &apos;24311_Sao_Dimas_200517.png&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="imagens/24311_Sao_Dimas_200517.png" name="logoA.png" stamp="1509669325689" updateReferences="true"/>
+</session>

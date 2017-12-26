@@ -1,0 +1,653 @@
+package br.com.saodimas.view.components.panel.apolice.editar;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ApoliceVO;
+import br.com.saodimas.model.beans.PlanoVO;
+import br.com.saodimas.model.beans.ProdutoObitoVO;
+import br.com.saodimas.model.beans.ServicoObitoVO;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.relatorio.GeradorRelatorio;
+import br.com.saodimas.relatorio.NomeRelatorio;
+import br.com.saodimas.view.components.frame.FramePrincipal;
+import br.com.saodimas.view.components.iframe.DependenteIFrame;
+import br.com.saodimas.view.components.iframe.DetalharFaturaIFrame;
+import br.com.saodimas.view.components.iframe.DevolucaoEmprestimoEquipamentoIFrame;
+import br.com.saodimas.view.components.iframe.EmprestimoEquipamentoIFrame;
+import br.com.saodimas.view.components.iframe.FaturaIFrame;
+import br.com.saodimas.view.components.iframe.ObitoIFrame;
+import br.com.saodimas.view.components.iframe.ObitoProdutoIFrame;
+import br.com.saodimas.view.components.iframe.ObitoServicoIFrame;
+import br.com.saodimas.view.components.iframe.ProdutoIFrame;
+import br.com.saodimas.view.components.iframe.QuitacaoFaturaIFrame;
+import br.com.saodimas.view.components.iframe.QuitacaoParceiroFaturaIFrame;
+import br.com.saodimas.view.components.iframe.ServicoIFrame;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.panel.CustomLayeredPanel;
+import br.com.saodimas.view.components.panel.apolice.ApoliceMainPanel;
+import br.com.saodimas.view.components.panel.apolice.ApolicePanel;
+import br.com.saodimas.view.components.panel.apolice.editar.dependente.ApoliceEditarDependentePanel;
+import br.com.saodimas.view.components.panel.apolice.editar.emprestimo.ApoliceEditarEmprestimoEquipamentoPanel;
+import br.com.saodimas.view.components.panel.apolice.editar.fatura.ApoliceEditarFaturaPanel;
+import br.com.saodimas.view.components.panel.apolice.editar.obito.ApoliceEditarObitoPanel;
+import br.com.saodimas.view.components.table.model.ApoliceTableModel;
+
+@SuppressWarnings("serial")
+public class ApoliceEditarMainPanel extends CustomLayeredPanel {
+	public static final String FORM_NAME = "Editar Apólice"; 
+	public static final String MENSAGEM_PADRAO = "Altere os dados da apólice, ou realize a manutenção de dependentes, faturas e óbitos.";
+
+	private ApoliceVO apolice;
+	private BarraNotificacao barNotificacao;
+	private JButton btSalvar;
+	private JButton btCancelar;
+	private JButton btImprimirDadosApolice;
+	private JButton btImprimirFinanceiro;
+	private JButton btImprimirCarteirinhas;
+
+	private DependenteIFrame iframeDependente;
+	private FaturaIFrame iframeFatura;
+	private ObitoIFrame iframeObito;
+	private ObitoServicoIFrame iframeSelecaoServico;
+	private ObitoProdutoIFrame iframeSelecaoProduto;
+	private ServicoIFrame iframeServico;
+	private ProdutoIFrame iframeProduto;
+	private QuitacaoFaturaIFrame iframeQuitar;
+	private QuitacaoParceiroFaturaIFrame iframeQuitarParceiro;
+	private DetalharFaturaIFrame iframeDetalharFatura;
+	private EmprestimoEquipamentoIFrame iframeEmprestimoEquipamento;
+	private DevolucaoEmprestimoEquipamentoIFrame iframeDevolucaoEmprestimoEquipamento;
+
+	private JTabbedPane apoliceTabPanel;
+	private ApoliceEditarInfoPanel apolicePanel;
+	private ApoliceEditarContatoPanel contatoPanel;
+	private ApoliceEditarTitularPanel titularPanel;
+	private ApoliceEditarInfoSistemaAntigoPanel infoSistemaAntigo;
+
+	private JTabbedPane detalhesTabPanel;
+	private ApoliceEditarDependentePanel dependentesPanel;
+	private ApoliceEditarFaturaPanel faturasPanel;
+	private ApoliceEditarObitoPanel obitosPanel;
+	private ApoliceEditarEmprestimoEquipamentoPanel emprestimoEquipamento;
+	
+	private static final Dimension DBUTTON = new Dimension(30,30);
+	private JToolBar barControle;
+	
+	private Boolean changed;
+	
+	private ApoliceTableModel copyApoliceTableModel;
+	public ApoliceEditarMainPanel(){
+		initialize();
+		configure();
+	}
+
+	public void adicionaProduto(ProdutoObitoVO p){
+		iframeObito.adicionaProduto(p);
+	}
+	
+	public void adicionaServico(ServicoObitoVO s) {
+		iframeObito.adicionaServico(s);
+	}	
+	
+	public FaturaIFrame getIframeFatura() {
+		return iframeFatura;
+	}
+
+	public DependenteIFrame getIframeDependente() {
+		return iframeDependente;
+	}	
+
+	public ObitoIFrame getIframeObito() {
+		return iframeObito;
+	}
+	
+	public ObitoServicoIFrame getIframeSelecaoServico() {
+		return iframeSelecaoServico;
+	}
+
+	public ObitoProdutoIFrame getIframeSelecaoProduto() {
+		return iframeSelecaoProduto;
+	}
+
+	public ServicoIFrame getIframeServico() {
+		return iframeServico;
+	}
+
+	public ProdutoIFrame getIframeProduto() {
+		return iframeProduto;
+	}
+	
+	public QuitacaoFaturaIFrame getIframeQuitar() {
+		return iframeQuitar;
+	}
+	
+	public QuitacaoParceiroFaturaIFrame getIframeQuitarParceiro() {
+		return iframeQuitarParceiro;
+	}
+	
+	public DetalharFaturaIFrame getIframeDetalharFatura() {
+		return iframeDetalharFatura;
+	}
+
+	public EmprestimoEquipamentoIFrame getIframeEmprestimoEquipamento() {
+		return iframeEmprestimoEquipamento;
+	}
+	
+	public DevolucaoEmprestimoEquipamentoIFrame getIframeDevolucaoEmprestimoEquipamento() {
+		return iframeDevolucaoEmprestimoEquipamento;
+	}
+
+	public ApoliceEditarInfoPanel getApolicePanel() {
+		return apolicePanel;
+	}
+
+	public ApoliceEditarContatoPanel getContatoPanel() {
+		return contatoPanel;
+	}
+
+	public ApoliceEditarTitularPanel getTitularPanel() {
+		return titularPanel;
+	}
+
+	public ApoliceEditarDependentePanel getDependentesPanel() {
+		return dependentesPanel;
+	}
+
+	public ApoliceEditarFaturaPanel getFaturasPanel() {
+		return faturasPanel;
+	}
+	
+	public ApoliceEditarObitoPanel getObitosPanel() {
+		return obitosPanel;
+	}
+	
+	public ApoliceEditarEmprestimoEquipamentoPanel getEmprestimoEquipamentoApoliceMainPanel() {
+		return emprestimoEquipamento;
+	}
+	
+	public void mostrarMensagem(String msg, int tipo){
+		barNotificacao.mostrarMensagem(msg, tipo);
+	}
+	
+	public void mostrarMensagemEquipamento(String msg, int tipo){
+		this.emprestimoEquipamento.notificar(msg, tipo);
+	}
+	
+	public void mostrarMensagemDependente(String msg, int tipo){
+		this.dependentesPanel.notificar(msg, tipo);
+	}
+	
+	public void mostrarMensagemDicaDependente(){
+		this.dependentesPanel.mostrarDica();
+	}
+	
+	public void mostrarMensagemFatura(String msg, int tipo){
+		this.faturasPanel.notificar(msg, tipo);
+	}
+	
+		
+	public void mostrarMensagemObito(String msg, int tipo){
+		this.obitosPanel.notificar(msg, tipo);
+	}
+
+	public void carregarEquipamentos()
+	{
+		this.emprestimoEquipamento.carregarEmprestimos();
+	}
+	
+	public void carregarDependentes()
+	{
+		this.dependentesPanel.carregarDependentes();
+	}
+	
+	public void carregarFaturas()
+	{
+		this.faturasPanel.carregarFaturas();
+	
+	
+	}
+	
+	public void carregarObitos()
+	{
+		this.obitosPanel.carregarObitos();
+	}
+	
+	public void setApolice(ApoliceVO apolice) {
+		this.apolice = apolice;
+		this.carregarDadosApolice();
+		this.faturasPanel.setApolice(apolice);
+		this.dependentesPanel.setApolice(apolice);
+		this.obitosPanel.setApolice(apolice);
+		this.emprestimoEquipamento.setApolice(apolice);
+		this.iframeFatura.setApolice(apolice);
+		this.setChanged(false);
+	}
+	
+	private void carregarDadosApolice()
+	{
+		this.titularPanel.setApolice(apolice);
+		this.apolicePanel.setApolice(apolice);
+		this.contatoPanel.setApolice(apolice);
+		this.infoSistemaAntigo.setApolice(apolice);
+	}
+	
+	public void setCopyApoliceTableModel(ApoliceTableModel copyApoliceTable) {
+		this.copyApoliceTableModel = copyApoliceTable;
+	}
+	
+	public boolean hasChanged(){
+		return changed;
+	}
+
+	public void setChanged(boolean hasChanged) {
+		changed = hasChanged;
+		btSalvar.setEnabled(changed);
+	}
+	
+	@Override
+	public void setEnabled(boolean enabled) {
+		habilitarComponentes(getComponents(), enabled);
+		super.setEnabled(enabled);
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		
+		if (apolice == null){
+			barNotificacao.mostrarMensagem("A Apólice não foi escolhida!", BarraNotificacao.ERRO);
+			setEnabled(false);
+		}
+		else{
+			barNotificacao.escondeMensagem();
+			setEnabled(true);
+			detalhesTabPanel.setSelectedIndex(0);
+									
+		}
+	}
+
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+		int x = getDesktop().getWidth() / 2;
+		int y = getDesktop().getHeight() / 2;
+
+		iframeDependente = new DependenteIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		iframeDependente.setLocation(x - iframeDependente.getSize().width / 2, y - iframeDependente.getSize().height / 2);
+
+		iframeFatura = new FaturaIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		iframeFatura.setLocation(x - iframeFatura.getSize().width / 2, y - iframeFatura.getSize().height / 2);
+
+
+		iframeSelecaoServico = new ObitoServicoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				super.setVisible(flag);
+				this.habilitarControles(false);
+			}
+		};
+		iframeSelecaoServico.setLocation(x - iframeSelecaoServico.getSize().width / 2, y - iframeSelecaoServico.getSize().height / 2);
+		
+		iframeSelecaoProduto = new ObitoProdutoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				super.setVisible(flag);
+				this.habilitarControles(false);
+			}
+		};
+		iframeSelecaoProduto.setLocation(x - iframeSelecaoProduto.getSize().width / 2, y - iframeSelecaoProduto.getSize().height / 2);
+		
+		iframeServico = new ServicoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				super.setVisible(flag);
+				this.habilitarControles(false);
+			}
+		};
+		iframeServico.setLocation(x - iframeServico.getSize().width / 2, y - iframeServico.getSize().height / 2);
+		
+		iframeProduto = new ProdutoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				super.setVisible(flag);
+				this.habilitarControles(false);
+			}
+		};
+		iframeProduto.setLocation(x - iframeProduto.getSize().width / 2, y - iframeProduto.getSize().height / 2);
+		
+		iframeObito = new ObitoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				if (flag == false){
+					iframeSelecaoProduto.setVisible(false);
+					iframeSelecaoServico.setVisible(false);
+					iframeProduto.setVisible(false);
+					iframeServico.setVisible(false);
+				} 
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		iframeObito.setLocation(x - iframeObito.getSize().width / 2, y - iframeObito.getSize().height / 2);
+		
+		iframeQuitar = new QuitacaoFaturaIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		
+		iframeQuitar.setLocation(x - iframeQuitar.getSize().width / 2, y - iframeQuitar.getSize().height / 2);
+
+		iframeQuitarParceiro = new QuitacaoParceiroFaturaIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		iframeQuitarParceiro.setLocation(x - iframeQuitarParceiro.getSize().width / 2, y - iframeQuitarParceiro.getSize().height / 2);
+		
+		
+		iframeDetalharFatura = new DetalharFaturaIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		iframeDetalharFatura.setLocation(x - iframeDetalharFatura.getSize().width / 2, y - iframeDetalharFatura.getSize().height / 2);
+		
+		
+		iframeEmprestimoEquipamento = new EmprestimoEquipamentoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		iframeEmprestimoEquipamento.setLocation(x - iframeEmprestimoEquipamento.getSize().width / 2, y - iframeEmprestimoEquipamento.getSize().height / 2);
+		
+		iframeDevolucaoEmprestimoEquipamento= new DevolucaoEmprestimoEquipamentoIFrame(){
+			@Override
+			public void setVisible(boolean flag) {
+				if (getGlass() != null) getGlass().setVisible(flag);
+				super.setVisible(flag);
+				this.habilitarControles(!flag);
+			}
+		};
+		iframeDevolucaoEmprestimoEquipamento.setLocation(x - iframeDevolucaoEmprestimoEquipamento.getSize().width / 2, y - iframeDevolucaoEmprestimoEquipamento.getSize().height / 2);
+		
+		getDesktop().add(iframeDependente);
+		getDesktop().add(iframeFatura);
+		getDesktop().add(iframeSelecaoServico);
+		getDesktop().add(iframeSelecaoProduto);
+		getDesktop().add(iframeServico);
+		getDesktop().add(iframeProduto);
+		getDesktop().add(iframeObito);
+		getDesktop().add(iframeQuitar);
+		getDesktop().add(iframeQuitarParceiro);
+		getDesktop().add(iframeDetalharFatura);		
+		getDesktop().add(iframeEmprestimoEquipamento);
+		getDesktop().add(iframeDevolucaoEmprestimoEquipamento);
+
+		titularPanel = new ApoliceEditarTitularPanel(barNotificacao);
+		apolicePanel = new ApoliceEditarInfoPanel(barNotificacao);
+		contatoPanel = new ApoliceEditarContatoPanel(barNotificacao);
+		infoSistemaAntigo = new ApoliceEditarInfoSistemaAntigoPanel(barNotificacao);
+
+		apoliceTabPanel = new JTabbedPane();
+		apoliceTabPanel.addTab("Dados da Apólice", new ImageIcon("imagens/apolice.gif"), apolicePanel);
+		apoliceTabPanel.addTab("Titular ou Responsável", new ImageIcon("imagens/titular.gif"), titularPanel);
+		apoliceTabPanel.addTab("Contato & Endereço", new ImageIcon("imagens/home.gif"), contatoPanel);
+		apoliceTabPanel.addTab("Info Sistema Antigo", new ImageIcon("imagens/apolice.gif"), infoSistemaAntigo);
+		apoliceTabPanel.setTabPlacement(JTabbedPane.LEFT);
+
+		dependentesPanel = new ApoliceEditarDependentePanel();
+		faturasPanel = new ApoliceEditarFaturaPanel();
+		obitosPanel = new ApoliceEditarObitoPanel();
+		//faturasParceiroPanel = new ApoliceEditarFaturaParceiroPanel();
+		emprestimoEquipamento = new ApoliceEditarEmprestimoEquipamentoPanel();
+
+		detalhesTabPanel = new JTabbedPane();
+		detalhesTabPanel.addTab("Faturas", new ImageIcon("imagens/faturas.gif"), faturasPanel);
+		detalhesTabPanel.addTab("Dependentes", new ImageIcon("imagens/dependentes.gif"), dependentesPanel);
+		detalhesTabPanel.addTab("Óbitos", new ImageIcon("imagens/obitos.gif"), obitosPanel);
+		//detalhesTabPanel.addTab("Detalhe Faturas Parceiro", new ImageIcon("imagens/faturas.gif"), faturasParceiroPanel);
+		detalhesTabPanel.addTab("Emprestimos", new ImageIcon("imagens/emprestimo.gif"), emprestimoEquipamento);
+
+		btSalvar = new JButton("Salvar", new ImageIcon("imagens/save.gif")){
+			@Override
+			public void setEnabled(boolean b) {
+				super.setEnabled(b && hasChanged());
+			}
+		};
+		
+		btSalvar.addActionListener(new EventoBotaoComando());
+		btSalvar.setHorizontalAlignment(JButton.LEFT);
+		btSalvar.setActionCommand(ApolicePanel.ACAO_SALVAR);
+		btSalvar.setEnabled(false);
+
+		btCancelar = new JButton("Voltar", new ImageIcon("imagens/back.gif"));
+		btCancelar.addActionListener(new EventoBotaoComando());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+		btCancelar.setActionCommand(ApolicePanel.ACAO_CANCELAR);
+					
+		barControle = new JToolBar();
+		barControle.setFloatable(false);
+		barControle.setOpaque(false);
+		barControle.setBorderPainted(false);
+		barControle.setBorder(BorderFactory.createEmptyBorder());
+		barControle.setMargin(new Insets(0, 0, 0, 0));
+		
+		btImprimirDadosApolice = new JButton("Impressão Apólice",new ImageIcon("imagens/imprimir.gif"));
+		btImprimirDadosApolice.setPreferredSize(DBUTTON);
+		btImprimirDadosApolice.addActionListener(new EventoBotaoComando());
+		btImprimirDadosApolice.setHorizontalAlignment(JButton.LEFT);
+		btImprimirDadosApolice.setToolTipText("Imprimir dados apólice");
+		barControle.add(btImprimirDadosApolice);
+		
+		btImprimirFinanceiro = new JButton("Impressão Financeiro",new ImageIcon("imagens/quitarFaturas.GIF"));
+		btImprimirFinanceiro.setPreferredSize(DBUTTON);
+		btImprimirFinanceiro.addActionListener(new EventoBotaoComando());
+		btImprimirFinanceiro.setHorizontalAlignment(JButton.LEFT);
+		btImprimirFinanceiro.setToolTipText("Imprimir financeiro apólice");
+		barControle.add(btImprimirFinanceiro);
+		
+		btImprimirCarteirinhas = new JButton("Impressão Carteirinhas",new ImageIcon("imagens/quitarFaturas.GIF"));
+		btImprimirCarteirinhas.setPreferredSize(DBUTTON);
+		btImprimirCarteirinhas.addActionListener(new EventoBotaoComando());
+		btImprimirCarteirinhas.setHorizontalAlignment(JButton.LEFT);
+		btImprimirCarteirinhas.setToolTipText("Imprimir carteirinhas");
+		barControle.add(btImprimirCarteirinhas);
+		
+		this.setChanged(false);
+		}
+
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infApolice = new JPanel(new GridBagLayout());
+
+		c.insets = new Insets(0, 1, 0, 1);
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		controle.add(btSalvar);
+		controle.add(btCancelar);
+		controle.add(new JLabel("                                                               "));
+		controle.add(barControle);
+		
+		c.anchor = GridBagConstraints.LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridwidth = 2;
+		c.weightx = 0;
+		c.weighty = 0;
+		c.gridy = 0;
+		c.gridx = 0; infApolice.add(controle, c);
+
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.VERTICAL;
+		c.gridwidth= 1;
+		c.weightx = 0;
+		c.weighty = 1;
+		c.gridy = 1;
+		c.gridx = 0; infApolice.add(apoliceTabPanel, c);
+
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridy =1;
+		c.gridx = 1; infApolice.add(detalhesTabPanel, c);
+
+		JPanel panelPrincipal = new JPanel(new GridBagLayout()); 
+		c = new GridBagConstraints();
+
+		c.anchor = GridBagConstraints.CENTER;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 1, 1);
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 0;
+		c.gridy = 0; panelPrincipal.add(barNotificacao, c);
+
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridx = 0;
+		c.gridy = 1; panelPrincipal.add(infApolice, c);
+
+		getPainelPrincipal().add(panelPrincipal, BorderLayout.CENTER);
+	}
+
+	private void habilitarComponentes(Component[] comps, boolean habilitar){
+		for (int i= 0; i < comps.length; i++){
+			if (comps[i] != null){
+				comps[i].setEnabled(habilitar);
+				if (comps[i] instanceof Container && !(comps[i] instanceof JInternalFrame))
+					habilitarComponentes(((Container)comps[i]).getComponents(), habilitar);
+			}
+		}
+	}
+	
+	private void voltar(){
+		Component c = getParent();
+		while (!(c instanceof JFrame)){
+			if (c == null) break;
+			c = c.getParent();
+		}
+		if (c != null){
+			JPanel p = ((FramePrincipal)c).getPainelPrincipal();
+			CardLayout cards = (CardLayout)p.getLayout();
+			cards.show(p, ApoliceMainPanel.FORM_NAME);
+		}
+		copyApoliceTableModel.loadData(null);
+	}
+	
+	private void salvar(){
+	
+	try {
+		apolicePanel.atulizadaDadosApolice();
+		contatoPanel.atulizadaDadosApolice();
+		titularPanel.atulizadaDadosApolice();
+		infoSistemaAntigo.atulizadaDadosApolice();
+	
+		
+			Controller.getInstance().updateApolice(apolice);
+		
+			this.atualizarApolice();
+				
+			barNotificacao.mostrarMensagem("Alterações salvas com sucesso.",BarraNotificacao.SUCESSO);
+			setChanged(false);
+			
+			copyApoliceTableModel.loadData(null);
+		
+		} catch (MensagemSaoDimasException e) {
+			barNotificacao.mostrarMensagem(e.getMessage(), BarraNotificacao.ERRO);
+			e.printStackTrace();
+		}
+	}
+	
+	public void atualizarApolice() throws MensagemSaoDimasException
+	{
+		this.apolice = Controller.getInstance().carregarApolice(apolice.getId());
+		this.carregarDadosApolice();
+	}
+	
+	public PlanoVO getPlanoSelecionadoCombo()
+	{
+		return this.apolicePanel.getPlanoSelecionadoComboBox();
+	} 
+
+		
+	private class EventoBotaoComando implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == btCancelar){
+				if (changed){
+					int opcao = mostraConfirmacao("Aviso", "Os dados da apólice foram alterados. Deseja salvar antes de sair?", JOptionPane.YES_NO_CANCEL_OPTION);
+					if (opcao == JOptionPane.YES_OPTION){
+						salvar();
+											
+					}
+					else if (opcao == JOptionPane.NO_OPTION)
+						voltar();
+				}
+				else voltar();
+			}else if (e.getSource() == btSalvar){
+				salvar();
+			
+			}else if (e.getSource() == btImprimirDadosApolice){
+				List<ApoliceVO> list = new ArrayList<ApoliceVO>();
+				list.add(apolice);
+				new GeradorRelatorio().gerarComSubRelatorioDependentes(NomeRelatorio.DADOS_APOLICE, list);
+			}
+			else if (e.getSource() == btImprimirFinanceiro){
+				List<ApoliceVO> list = new ArrayList<ApoliceVO>();
+				list.add(apolice);
+				new GeradorRelatorio().gerarComSubRelatorioFinanceiro(NomeRelatorio.DADOS_FINANCEIRO_APOLICE, list);
+			}
+		}
+	}
+}

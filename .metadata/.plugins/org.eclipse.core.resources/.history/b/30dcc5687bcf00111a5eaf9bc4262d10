@@ -1,0 +1,17 @@
+package br.com.saodimas.model.dao;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+import br.com.saodimas.model.beans.CompraVO;
+import br.com.saodimas.model.beans.ObitoVO;
+import br.com.saodimas.model.beans.ProdutoCompraVO;
+import br.com.saodimas.model.beans.ProdutoObitoVO;
+
+public interface ProdutoCompraDAO extends GenericDAO<ProdutoCompraVO> {
+
+		List<ProdutoObitoVO> getAllProdutoCompraByCompra(CompraVO obito, Connection conn) throws SQLException;
+		void deleteAllProdutoObitoByObito(ObitoVO obito, Connection conn) throws SQLException;
+
+}

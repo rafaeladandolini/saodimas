@@ -1,0 +1,1629 @@
+package br.com.saodimas.model.facade;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+
+import br.com.saodimas.model.beans.ApoliceVO;
+import br.com.saodimas.model.beans.AssociadoVO;
+import br.com.saodimas.model.beans.CemiterioVO;
+import br.com.saodimas.model.beans.CidadeVO;
+import br.com.saodimas.model.beans.ClienteVO;
+import br.com.saodimas.model.beans.ColaboradorVO;
+import br.com.saodimas.model.beans.CompraVO;
+import br.com.saodimas.model.beans.EmprestimoEquipamentoVO;
+import br.com.saodimas.model.beans.EquipamentoVO;
+import br.com.saodimas.model.beans.FaturaVO;
+import br.com.saodimas.model.beans.FornecedorVO;
+import br.com.saodimas.model.beans.GrupoTrabalhoVO;
+import br.com.saodimas.model.beans.ObitoVO;
+import br.com.saodimas.model.beans.ParceiroVO;
+import br.com.saodimas.model.beans.PlanoVO;
+import br.com.saodimas.model.beans.ProdutoCompraVO;
+import br.com.saodimas.model.beans.ProdutoObitoVO;
+import br.com.saodimas.model.beans.ProdutoVO;
+import br.com.saodimas.model.beans.ProdutoVendaVO;
+import br.com.saodimas.model.beans.RelacaoVO;
+import br.com.saodimas.model.beans.ServicoObitoVO;
+import br.com.saodimas.model.beans.ServicoVO;
+import br.com.saodimas.model.beans.TipoAtendimentoVO;
+import br.com.saodimas.model.beans.VendaVO;
+import br.com.saodimas.model.dao.EmprestimoEquipamentoDAO;
+import br.com.saodimas.model.dao.connection.SqlConnector;
+import br.com.saodimas.model.dao.factory.DAOFactory;
+import br.com.saodimas.model.dao.impl.EmprestimoEquipamentoDAOImpl;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.model.facade.remote.AdministradorRemote;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
+
+public class Administrador implements AdministradorRemote {
+
+	public static final String[] STATUS_ITENS = { "Ativo", "Cancelado" };
+
+	public ColaboradorVO insertColaborador(ColaboradorVO colaborador)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildColaboradorDAO().save(colaborador, conn);
+			return colaborador;
+
+		} finally {
+
+		}
+	}
+	
+	public CompraVO insertCompra(CompraVO compra)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildCompraDAO().save(compra, conn);
+			
+			List<ProdutoCompraVO> listProd = compra.getProdutos();
+			if(listProd != null){
+				for (ProdutoCompraVO produtoObitoVO : listProd) {
+					produtoObitoVO.setCompra(compra);
+					DAOFactory.DEFAULT.buildProdutoCompraDAO().save(produtoObitoVO, conn);
+				}
+			}
+			
+			return compra;
+
+		} finally {
+
+		}
+	}
+	
+	public ClienteVO insertCliente(ClienteVO cleinte)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildClienteDAO().save(cleinte, conn);
+			return cleinte;
+
+		} finally {
+
+		}
+	}
+	
+	public FornecedorVO insertEmpresaCompra(FornecedorVO empresa) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEmpresaCompraDAO().save(empresa, conn);
+			return empresa;
+
+		} finally {
+
+		}
+	}
+
+	public PlanoVO insertPlano(PlanoVO plano) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildPlanoDAO().save(plano, conn);
+			return plano;
+
+		} finally {
+
+		}
+	}
+
+	public ProdutoVO insertProduto(ProdutoVO produto) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildProdutoDAO().save(produto, conn);
+			return produto;
+
+		} finally {
+
+		}
+	}
+
+	public ServicoVO insertServico(ServicoVO servico) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildServicoDAO().save(servico, conn);
+			return servico;
+
+		} finally {
+
+		}
+	}
+
+	public CidadeVO insertCidade(CidadeVO cidade) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildCidadeDAO().save(cidade, conn);
+			return cidade;
+
+		} finally {
+
+		}
+	}
+
+	public RelacaoVO insertRelacao(RelacaoVO relacao) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildRelacaoDAO().save(relacao, conn);
+			return relacao;
+
+		} finally {
+
+		}
+	}
+
+	public ObitoVO insertObito(ObitoVO obito) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildObitoDAO().save(obito, conn);
+			
+			List<ProdutoObitoVO> listProd = obito.getProdutos();
+			if(listProd != null){
+				for (ProdutoObitoVO produtoObitoVO : listProd) {
+					DAOFactory.DEFAULT.buildProdutoObitoDAO().save(produtoObitoVO, conn);
+				}
+			}
+			
+			
+			List<ServicoObitoVO> listSer = obito.getServicos();
+			if(listSer != null){
+				for (ServicoObitoVO servicoObitoVO : listSer) {
+					DAOFactory.DEFAULT.buildServicoObitoDAO().save(servicoObitoVO, conn);
+				}
+			}
+			
+			return obito;
+
+		} finally {
+
+		}
+	}
+
+	public ApoliceVO insertApolice(ApoliceVO apolice) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildApoliceDAO().save(apolice, conn);
+			
+		/*	AssociadoVO titular = apolice.getTitular();
+			titular.setApolice(apolice);
+			DAOFactory.DEFAULT.buildAssociadoDAO().updateIdApoliceTitular(titular, conn);*/
+			
+			return apolice;
+			
+
+		} finally {
+
+		}
+	}
+
+	public AssociadoVO insertAssociado(AssociadoVO associado)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			associado.setNome(associado.getNome());
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildAssociadoDAO().save(associado, conn);
+			return associado;
+
+		} finally {
+
+		}
+	}
+
+	public ColaboradorVO updateColaborador(ColaboradorVO colaborador)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildColaboradorDAO().update(colaborador, conn);
+			return colaborador;
+
+		} finally {
+
+		}
+	}
+	
+	public CompraVO updateCompra(CompraVO compra)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildCompraDAO().update(compra, conn);
+			List<ProdutoCompraVO> listCompra = compra.getProdutos();
+			for (ProdutoCompraVO produtoCompra : listCompra) {
+				if(produtoCompra.getId() != null)
+					DAOFactory.DEFAULT.buildProdutoCompraDAO().update(produtoCompra, conn);
+				else
+				{
+					produtoCompra.setCompra(compra);
+					DAOFactory.DEFAULT.buildProdutoCompraDAO().save(produtoCompra, conn);
+				}
+			}
+			
+			compra = DAOFactory.DEFAULT.buildCompraDAO().findById(compra.getId(), conn);		
+			return compra;
+
+		} finally {
+
+		}
+	}
+	
+	public FornecedorVO updateEmpresaCompra(FornecedorVO empresa)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEmpresaCompraDAO().update(empresa, conn);
+			return empresa;
+
+		} finally {
+
+		}
+	}
+	
+	public ClienteVO updateCliente(ClienteVO cliente)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildClienteDAO().update(cliente, conn);
+			return cliente;
+
+		} finally {
+
+		}
+	}
+
+	public PlanoVO updatePlano(PlanoVO plano) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			//plano.setDescricao(plano.getDescricao().toUpperCase());
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildPlanoDAO().update(plano, conn);
+			return plano;
+
+		} finally {
+
+		}
+	}
+
+	public ProdutoVO updateProduto(ProdutoVO produto) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildProdutoDAO().update(produto, conn);
+			return produto;
+
+		} finally {
+
+		}
+	}
+
+	public ServicoVO updateServico(ServicoVO servico) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildServicoDAO().update(servico, conn);
+			return servico;
+
+		} finally {
+
+		}
+	}
+
+	public CidadeVO updateCidade(CidadeVO cidade) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			//cidade.setNome(cidade.getNome().toUpperCase());
+			//cidade.setEstado(cidade.getEstado().toUpperCase());
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildCidadeDAO().update(cidade, conn);
+			return cidade;
+
+		} finally {
+
+		}
+	}
+
+	public RelacaoVO updateRelacao(RelacaoVO relacao) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			//relacao.setDescricao(relacao.getDescricao().toUpperCase());
+			//relacao.setTipoRelacao(relacao.getTipoRelacao().toUpperCase());
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildRelacaoDAO().update(relacao, conn);
+			return relacao;
+
+		} finally {
+
+		}
+	}
+
+	public ObitoVO updateObito(ObitoVO obito) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildObitoDAO().update(obito, conn);
+			List<ServicoObitoVO> listServico = obito.getServicos();
+			for (ServicoObitoVO servicoObitoVO : listServico) {
+				if(servicoObitoVO.getId() != null)
+					DAOFactory.DEFAULT.buildServicoObitoDAO().update(servicoObitoVO, conn);
+				else
+				{
+					servicoObitoVO.setObito(obito);
+					DAOFactory.DEFAULT.buildServicoObitoDAO().save(servicoObitoVO, conn);
+				}
+			}
+			List<ProdutoObitoVO> listProduto = obito.getProdutos();
+			for (ProdutoObitoVO produtoObitoVO : listProduto) {
+				if(produtoObitoVO.getId() != null)
+					DAOFactory.DEFAULT.buildProdutoObitoDAO().update(produtoObitoVO, conn);
+				else{
+					produtoObitoVO.setObito(obito);
+					DAOFactory.DEFAULT.buildProdutoObitoDAO().save(produtoObitoVO, conn);
+				}
+			}
+			obito = DAOFactory.DEFAULT.buildObitoDAO().findById(obito.getId(), conn);		
+			return obito;
+
+		} finally {
+
+		}
+	}
+
+	public ApoliceVO updateApolice(ApoliceVO apolice) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+
+			DAOFactory.DEFAULT.buildApoliceDAO().update(apolice, conn);
+
+			return apolice;
+
+		} finally {
+
+		}
+	}
+
+	public AssociadoVO updateAssociado(AssociadoVO associado)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			associado.setNome(associado.getNome());
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildAssociadoDAO().update(associado, conn);
+			return associado;
+
+		} finally {
+
+		}
+	}
+
+	public void deleteColaborador(ColaboradorVO colaborador)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildColaboradorDAO().delete(colaborador, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			cve.printStackTrace();
+
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o colaborador.");
+		} finally {
+
+		}
+	}
+	
+	public void deleteCompra(CompraVO compra)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildCompraDAO().delete(compra, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			cve.printStackTrace();
+
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover a compra.");
+		} finally {
+
+		}
+	}
+	
+	public void deleteEmpresaCompra(FornecedorVO empresa)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEmpresaCompraDAO().delete(empresa, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			cve.printStackTrace();
+
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o colaborador.");
+		} finally {
+
+		}
+	}
+
+	public void deletePlano(PlanoVO plano) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildPlanoDAO().delete(plano, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o plano.");
+		} finally {
+
+		}
+	}
+
+	public void deleteProduto(ProdutoVO produto) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildProdutoDAO().delete(produto, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o produto.");
+		} finally {
+
+		}
+	}
+
+	public void deleteServico(ServicoVO servico) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildServicoDAO().delete(servico, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o serviço.");
+		} finally {
+
+		}
+	}
+
+	public void deleteCidade(CidadeVO cidade) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildCidadeDAO().delete(cidade, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover a cidade.");
+		} finally {
+
+		}
+	}
+
+	public void deleteRelacao(RelacaoVO relacao) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildRelacaoDAO().delete(relacao, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover a relação.");
+		} finally {
+
+		}
+	}
+
+	public void deleteObito(ObitoVO obito) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildObitoDAO().delete(obito, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o obito.");
+		} finally {
+
+		}
+	}
+
+	public void deleteObito(List<ObitoVO> obitos) throws SQLException,
+			MensagemSaoDimasException {
+
+		for (ObitoVO obitoVO : obitos) {
+			this.deleteObito(obitoVO);
+		}
+
+	}
+
+	public void deleteApolice(ApoliceVO apolice) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildApoliceDAO().delete(apolice, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			cve.printStackTrace();
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover a apolice.");
+
+		} finally {
+
+		}
+	}
+
+	public void deleteAssociado(AssociadoVO associado) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildAssociadoDAO().delete(associado, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o associado.");
+
+		} finally {
+
+		}
+
+	}
+
+	public void deleteAssociado(List<AssociadoVO> associado)
+			throws SQLException, MensagemSaoDimasException {
+
+		try {
+
+			for (AssociadoVO associadoVO : associado) {
+				this.deleteAssociado(associadoVO);
+			}
+
+		} finally {
+
+		}
+
+	}
+
+	public List<CidadeVO> listCidades() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildCidadeDAO().findAll(conn);
+
+		} finally {
+
+		}
+
+	}
+
+	public List<CompraVO> listCompras() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildCompraDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<ColaboradorVO> listColaboradores() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildColaboradorDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<GrupoTrabalhoVO> listGrupoTrabalhos() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildGrupoTrabalhoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<FornecedorVO> listEmpresasCompra() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildEmpresaCompraDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<ClienteVO> listClientes() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildClienteDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<PlanoVO> listPlanos() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildPlanoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<PlanoVO> listPlanosByStatus(String status) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildPlanoDAO().getAllPlanosByStatus(
+					status, conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<ProdutoVO> listProdutos() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildProdutoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<ProdutoVO> listProdutosByStatus(String status)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildProdutoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<ProdutoVO> listProdutosByStatusTipoProduto(String status, String tipoProduto)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildProdutoDAO().getAllProdutosByStatusTipoProduto(status, tipoProduto, conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<RelacaoVO> listRelacoes() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildRelacaoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<RelacaoVO> listRelacoes(String tipo, String status)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildRelacaoDAO()
+					.getAllRelacoesByTipoStatus(status, tipo, conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<ServicoVO> listServicos() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildServicoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<ServicoVO> listServicosByStatus(String status)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildServicoDAO().getAllServicosByStatus(
+					status, conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<ObitoVO> listObitos() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildObitoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<TipoAtendimentoVO> listTipoAtendimento() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildTipoAtendimentoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<ApoliceVO> listApolice() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildApoliceDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<ApoliceVO> listApoliceOrderByCidade() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildApoliceDAO().findAllOrderByCidade(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<ApoliceVO> listApoliceByCidadeOrderByCidade(CidadeVO cidade)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildApoliceDAO()
+					.findByCidadeOrderByCidade(cidade, conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<ApoliceVO> listConsultaApolices(String tipo,
+			String[] parametros, String status) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildApoliceDAO().consultaApolice(tipo,
+					parametros, status, conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<AssociadoVO> listAssociados() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildAssociadoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<CidadeVO> getCidadeAllByEstado(String estado)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildCidadeDAO().getAllCidadesByEstado(
+					estado, conn);
+
+		} finally {
+
+		}
+
+	}
+
+	public void deleteFatura(FaturaVO fatura) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildFaturaDAO().delete(fatura, conn);
+
+		} finally {
+
+		}
+	}
+
+	public void deleteFatura(List<FaturaVO> fatura) throws SQLException,
+			MensagemSaoDimasException {
+		for (FaturaVO faturaVO : fatura) {
+			this.deleteFatura(faturaVO);
+		}
+
+	}
+
+	public List<FaturaVO> insertFaturas(List<FaturaVO> faturas,
+			ApoliceVO apolice) throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			for (FaturaVO faturaVO : faturas) {
+				if (faturaVO.getApolice() == null)
+					faturaVO.setApolice(apolice);
+
+				DAOFactory.DEFAULT.buildFaturaDAO().save(faturaVO, conn);
+			}
+			return faturas;
+
+		} finally {
+
+		}
+	}
+
+	public List<FaturaVO> listFaturas(ApoliceVO apolice) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildFaturaDAO().getAllFaturasByApolice(
+					apolice, conn);
+
+		} finally {
+
+		}
+	}
+
+	public FaturaVO updateFatura(FaturaVO fatura) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildFaturaDAO().update(fatura, conn);
+			return fatura;
+
+		} finally {
+
+		}
+	}
+	
+	public void faturaDestacada(FaturaVO fatura) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildFaturaDAO().destacadaFatura(fatura, conn);
+		
+
+		} finally {
+
+		}
+	}
+
+	public List<FaturaVO> updateFaturas(List<FaturaVO> faturas)
+			throws SQLException, MensagemSaoDimasException {
+
+		try {
+			for (FaturaVO faturaVO : faturas)
+				faturaVO = updateFatura(faturaVO);
+
+			return faturas;
+
+		}
+
+		finally {
+
+		}
+	}
+
+	public ApoliceVO getApoliceById(Integer id) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			ApoliceVO apolice = DAOFactory.DEFAULT.buildApoliceDAO().findById(
+					id, conn);
+			return apolice;
+
+		} finally {
+
+		}
+	}
+
+	public Integer getProximoNumeroContrato() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildApoliceDAO().getProximoNumContrato(
+					conn);
+
+		} finally {
+
+		}
+	}
+
+	public boolean isNumContratoValido(String number) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildApoliceDAO().isNumContratoValido(
+					number, conn);
+
+		} finally {
+
+		}
+	}
+/*
+	public List<FaturaVO> getListFaturasDiaColaborador(
+			ColaboradorVO colaboradorVO, Date data) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildFaturaDAO()
+					.getAllFaturasByDateColaborador(colaboradorVO, data, conn);
+
+		} finally {
+
+		}
+	}*/
+/*
+	public List<FaturaVO> getListFaturasDia(Date data) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildFaturaDAO().getAllFaturasByDate(
+					data, conn);
+
+		} finally {
+
+		}
+	}*/
+	/*
+	public List<FaturaVO> getListFaturasDia(Date dataInicio, Date dataFim)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildFaturaDAO().getAllFaturasByDate(
+					dataInicio, dataFim, conn);
+
+		} finally {
+
+		}
+	}*/
+
+	public List<FaturaVO> consultaFaturas(
+			ColaboradorVO colaboradorVO, ParceiroVO parceiro, Boolean parceiroTodosNenhum, Date dataInicio, Date dataFim, Date dataInicioBaixa, Date dataFimBaixa)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildFaturaDAO()
+					.getAllFaturasByDateColaboradorParceiro(colaboradorVO, parceiro,parceiroTodosNenhum, dataInicio,
+							dataFim, dataInicioBaixa, dataFimBaixa, conn);
+
+		} finally {
+
+		}
+	}
+
+	public void deleteProdutosObito(List<ProdutoObitoVO> list)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+
+			conn = SqlConnector.getInstance().getConnection();
+			for (ProdutoObitoVO vo : list) {
+				DAOFactory.DEFAULT.buildProdutoObitoDAO().delete(vo, conn);
+			}
+
+		} finally {
+
+		}
+
+	}
+
+	public void deleteServicosObito(List<ServicoObitoVO> list)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			for (ServicoObitoVO servicoObitoVO : list) {
+				DAOFactory.DEFAULT.buildServicoObitoDAO().delete(
+						servicoObitoVO, conn);
+			}
+		} finally {
+
+		}
+	}
+
+	public List<ProdutoVO> listConsultaProdutos(String tipo,
+			String[] paramentros, String status) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildProdutoDAO().consultaProduto(tipo,
+					paramentros, status, conn);
+
+		} finally {
+
+		}
+
+	}
+
+	public List<ServicoVO> listConsultaServicos(String tipo,
+			String[] paramentros, String status) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildServicoDAO().consultaServico(tipo,
+					paramentros, status, conn);
+
+		} finally {
+
+		}
+	}
+
+	public FaturaVO insertFatura(FaturaVO fatura) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildFaturaDAO().save(fatura, conn);
+			return fatura;
+
+		} finally {
+
+		}
+	}
+
+	public void deleteParceiro(ParceiroVO parceiro) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildParceiroDAO().delete(parceiro, conn);
+
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			cve.printStackTrace();
+
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o parceiro.");
+		} finally {
+
+		}
+	}
+
+	public ParceiroVO insertParceiro(ParceiroVO parceiro) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildParceiroDAO().save(parceiro, conn);
+			return parceiro;
+
+		} finally {
+
+		}
+	}
+
+	public List<ParceiroVO> listParceiros() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildParceiroDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public ParceiroVO updateParceiro(ParceiroVO parceiro) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildParceiroDAO().update(parceiro, conn);
+			return parceiro;
+		} finally {
+
+		}
+	}
+
+	public List<ParceiroVO> listParceirosAtivo() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildParceiroDAO().getAllParceirosAtivos(
+					conn);
+
+		} finally {
+
+		}
+	}
+
+	public void deleteEquipamento(EquipamentoVO vo) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEquipamentoDAO().delete(vo, conn);
+
+		} finally {
+
+		}
+		
+	}
+
+	public EquipamentoVO insertEquipamento(EquipamentoVO vo) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEquipamentoDAO().save(vo, conn);
+			return vo;
+		} finally {
+
+		}
+	}
+
+	public List<EquipamentoVO> listEquipamentos() throws SQLException,
+			MensagemSaoDimasException {
+		
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildEquipamentoDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+	
+	public List<EquipamentoVO> listEquipamentosComQtde() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		EmprestimoEquipamentoDAO dao = new EmprestimoEquipamentoDAOImpl();
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			List<EquipamentoVO> list = DAOFactory.DEFAULT.buildEquipamentoDAO().findAll(conn);
+			for (EquipamentoVO equipamentoVO : list) {
+				int qtde = dao.getQtdeEquipamentosEmEmprestimo(equipamentoVO, conn);
+				equipamentoVO.setQtdeEmprestimo(qtde);
+			}
+			return list;
+		} finally {
+
+		}
+	}
+
+	public EquipamentoVO updateEquipamento(EquipamentoVO vo) throws SQLException,
+			MensagemSaoDimasException {
+		
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEquipamentoDAO().update(vo, conn);
+			return vo;
+		} finally {
+
+		}
+	}
+
+	public void deleteEmprestimoEquipamento(EmprestimoEquipamentoVO vo)
+			throws SQLException, MensagemSaoDimasException {
+		
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().delete(vo, conn);
+			
+		} finally {
+
+		}
+		
+	}
+	
+	public void estornoDevolucaoEquipamento(EmprestimoEquipamentoVO vo)
+			throws SQLException, MensagemSaoDimasException {
+		
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			vo.setDataDevolucao(null);
+			DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().estornoDevolucao(vo, conn);
+			
+		} finally {
+
+		}
+		
+	}
+
+
+	public EmprestimoEquipamentoVO insertEmprestimoEquipamento(EmprestimoEquipamentoVO vo)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().save(vo, conn);
+			return vo;
+		} finally {
+
+		}
+	}
+
+	public List<EmprestimoEquipamentoVO> listEmprestimoEquipamento() throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().findAll(conn);
+		} finally {
+
+		}
+	}
+
+	public List<EmprestimoEquipamentoVO> listEmprestimoEquipamentoByApolice(
+			ApoliceVO apolice) throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().getAllEmpretimoEquipamentoVOByApolice(apolice, conn);
+		} finally {
+
+		}
+	}
+	
+	public List<EmprestimoEquipamentoVO> listDevolucoesEquipamentoByApolice(
+			ApoliceVO apolice) throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().getAllDevolucoesEquipamentoVOByApolice(apolice, conn);
+		} finally {
+
+		}
+	}
+
+	public EmprestimoEquipamentoVO updateEmprestimoEquipamento(EmprestimoEquipamentoVO vo)
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().update(vo, conn);
+			return vo;
+		} finally {
+
+		}
+	}
+
+	public List<EquipamentoVO> listEquipamentoDisponiveis()
+			throws SQLException, MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildEquipamentoDAO().getAllEquipamentosDisponiveis(conn);
+			
+		} finally {
+
+		}
+	}
+	
+	public List<CemiterioVO> listCemiterios() throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildCemiterioDAO().findAll(conn);
+
+		} finally {
+
+		}
+	}
+
+	public List<AssociadoVO> listAssociadosByApolice(ApoliceVO apolice)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildAssociadoDAO().getAllDependentesByApolice(apolice, conn);
+			
+		} finally {
+
+		}
+
+	}
+
+	public List<ObitoVO> listObitosByApolice(ApoliceVO apolice)
+			throws SQLException, MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			List<ObitoVO> list = DAOFactory.DEFAULT.buildObitoDAO().getAllObitosByApolice(apolice, conn);
+			for (ObitoVO obitoVO : list) {
+				obitoVO.setProdutos(DAOFactory.DEFAULT.buildProdutoObitoDAO().getAllProdutoObitoByObito(obitoVO, conn));
+			}
+			
+			return list;
+		} finally {
+
+		}
+	}
+
+	public List<EmprestimoEquipamentoVO> consultaEmprestimosByEquipamento(
+			EquipamentoVO equipamento, CidadeVO cidade, String status) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildEmprestimoEquipamentoDAO().consultaEmprestimosByEquipamento(equipamento, cidade,   status, conn);
+			
+		} finally {
+
+		}
+		
+	}
+
+	@Override
+	public List<ObitoVO> listConsultaObitos(String tipo, String parametros[], CidadeVO cidade, TipoAtendimentoVO tipoAtendimento)
+			throws SQLException, MensagemSaoDimasException {
+		
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			return DAOFactory.DEFAULT.buildObitoDAO().consultaObito(tipo, parametros, cidade, tipoAtendimento, conn);
+
+		} finally {
+
+		}
+		
+	}
+
+	@Override
+	public void deleteCliente(ClienteVO cliente) throws SQLException,
+			MensagemSaoDimasException {
+
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildClienteDAO().delete(cliente, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover o cliente.");
+		} finally {
+
+		}
+	}
+
+	@Override
+	public void deleteProdutosCompra(List<ProdutoCompraVO> list)
+			throws SQLException, MensagemSaoDimasException {
+		
+		Connection conn = null;
+		try {
+
+			conn = SqlConnector.getInstance().getConnection();
+			for (ProdutoCompraVO vo : list) {
+				DAOFactory.DEFAULT.buildProdutoCompraDAO().delete(vo, conn);
+			}
+
+		} finally {
+
+		}
+		
+	}
+
+	@Override
+	public VendaVO insertVenda(VendaVO venda) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildVendaDAO().save(venda, conn);
+			
+			List<ProdutoVendaVO> listProd = venda.getProdutos();
+			if(listProd != null){
+				for (ProdutoVendaVO prod : listProd) {
+					prod.setVenda(venda);
+					DAOFactory.DEFAULT.buildProdutoVendaDAO().save(prod, conn);
+				}
+			}
+			
+			return venda;
+
+		} finally {
+
+		}
+	}
+
+	@Override
+	public VendaVO updateVenda(VendaVO venda) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildVendaDAO().update(venda, conn);
+			List<ProdutoVendaVO> listaVenda = venda.getProdutos();
+			
+			for (ProdutoVendaVO produtoVenda : listaVenda) {
+				if (produtoVenda.getId() != null)
+					DAOFactory.DEFAULT.buildProdutoVendaDAO().update(produtoVenda, conn);
+				else {
+					produtoVenda.setVenda(venda);
+					DAOFactory.DEFAULT.buildProdutoVendaDAO().save(produtoVenda, conn);
+				}
+			}
+
+			venda = DAOFactory.DEFAULT.buildVendaDAO().findById(venda.getId(),conn);
+			return venda;
+
+		} finally {
+
+		}
+	}
+
+	@Override
+	public void deleteVenda(VendaVO venda) throws SQLException,
+			MensagemSaoDimasException {
+		Connection conn = null;
+		try {
+			conn = SqlConnector.getInstance().getConnection();
+			DAOFactory.DEFAULT.buildVendaDAO().delete(venda, conn);
+		} catch (MySQLIntegrityConstraintViolationException cve) {
+			cve.printStackTrace();
+
+			throw new MensagemSaoDimasException(
+					"Não foi possível remover a venda.");
+		} finally {
+
+		}
+	}
+
+	@Override
+	public List<VendaVO> listVendas() throws SQLException,
+			MensagemSaoDimasException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteProdutosVenda(List<ProdutoVendaVO> list)
+			throws SQLException, MensagemSaoDimasException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+}

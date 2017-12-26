@@ -1,0 +1,2 @@
+eclipse.preferences.version=1
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\r\n<watchExpressions>\r\n<expression enabled\="true" text\=" entity.getCemiterio()"/>\r\n<expression enabled\="true" text\="entity.getCemiterio() \!\= null"/>\r\n<expression enabled\="true" text\="btnRadioTodos.isSelected()"/>\r\n<expression enabled\="true" text\="sql"/>\r\n<expression enabled\="true" text\="tipoAtendimento.getId()"/>\r\n<expression enabled\="true" text\="obito.getApolice()"/>\r\n</watchExpressions>\r\n

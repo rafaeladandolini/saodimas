@@ -1,0 +1,60 @@
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
+public class Estudos extends JFrame{
+	  public Estudos(){
+	    super("Como usar a classe GridBagLayout");
+
+	    // define o layout
+	    setLayout(new GridBagLayout());
+
+	    // cria o GridBagConstraints
+	    GridBagConstraints gbc = new GridBagConstraints();
+
+	    // controla o espaço entre os componentes
+	    // e as linhas do GridBagLayout.
+	    // aqui nós definimos 5 pixels para os
+	    // lados de cima, esquerda, inferior e direita
+	    gbc.insets = new Insets(5, 5, 5, 5);
+
+	    // adiciona componentes à janela
+	    gbc.gridy = 0; // linha
+	    gbc.gridx = 0; // coluna
+	    add(new JButton("Botão 1"), gbc);
+
+	    gbc.gridy = 0; // linha
+	    gbc.gridx = 1; // coluna
+	    add(new JButton("Botão 2"), gbc);
+
+	    gbc.gridy = 0; // linha
+	    gbc.gridx = 2; // coluna
+	    add(new JButton("Botão 3"), gbc);
+
+	    gbc.gridy = 1; // linha
+	    gbc.gridx = 0; // coluna
+	    add(new JButton("Botão 4"), gbc);
+
+	    gbc.gridy = 1; // linha
+	    gbc.gridx = 1; // coluna
+	    add(new JButton("Botão 5"), gbc);
+
+	    gbc.gridy = 1; // linha
+	    gbc.gridx = 2; // coluna
+	    add(new JButton("Botão 6"), gbc);
+	    
+	    //setSize(350, 150);
+	    pack(); // ajusta o tamanho da janela ao
+	            // dos componentes
+	    setVisible(true);    
+	  }
+
+	  public static void main(String args[]){
+	    Estudos app = new Estudos();
+	    app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	  }
+}

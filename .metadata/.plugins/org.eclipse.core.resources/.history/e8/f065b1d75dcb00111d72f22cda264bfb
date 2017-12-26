@@ -1,0 +1,60 @@
+package br.com.saodimas.view.components.iframe;
+
+import javax.swing.ImageIcon;
+import javax.swing.JInternalFrame;
+
+import br.com.saodimas.model.beans.ClienteVO;
+import br.com.saodimas.model.beans.ColaboradorVO;
+import br.com.saodimas.view.components.panel.cliente.ClientePanel;
+import br.com.saodimas.view.components.panel.colaborador.ColaboradorPanel;
+import br.com.saodimas.view.util.WinManager;
+
+@SuppressWarnings("serial")
+public class ClienteIFrame extends JInternalFrame {
+	private ClientePanel clientePanel;
+	
+	public ClienteIFrame() {
+		super("Novo Cliente", false, true, false);
+		initialize();
+	}
+	
+	public ClienteIFrame(ClienteVO cliente) {
+		super("Editar Colaborador", false, true, false);
+		initialize();
+		clientePanel.setCliente(cliente);
+	}
+	
+	public ColaboradorVO getColaborador() {
+		return clientePanel.getColaborador();
+	}
+
+	public void setCliente(ClienteVO cliente) {
+		setTitle((cliente == null)? "Novo Cliente" : "Editar Cliente");
+		clientePanel.setColaborador(cliente);
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		habilitarControles(!visible);
+		super.setVisible(visible);
+		if (visible) clientePanel.focoPadrao();
+	}
+	
+	public void habilitarControles(boolean enable){
+		if (enable && WinManager.getJanelaInicial() != null)
+			WinManager.getJanelaInicial().habilitarTudo();
+		if (!enable && WinManager.getJanelaInicial() != null)
+			WinManager.getJanelaInicial().desabilitarTudo();
+	}
+	
+	private void initialize(){
+		clientePanel = new ColaboradorPanel();
+		
+		getContentPane().add(clientePanel);
+		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
+		setIconifiable(true);
+		setFrameIcon(new ImageIcon("imagens/colaborador.gif"));
+		setTitle((clientePanel.getColaborador() == null)? "Novo Colaborador" : "Editar Colaborador");
+		pack();
+	}
+}

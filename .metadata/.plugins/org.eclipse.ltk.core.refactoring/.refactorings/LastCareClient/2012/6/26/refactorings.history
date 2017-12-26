@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;LastCareClient/ejbModule/br/com/saodimas/view/components/panel/obito/ConsultaEmprestimoPanel.java&apos; to &apos;ConsultaObitoPanel.java&apos;" description="Rename resource &apos;ConsultaEmprestimoPanel.java&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="ejbModule/br/com/saodimas/view/components/panel/obito/ConsultaEmprestimoPanel.java" name="ConsultaObitoPanel.java" stamp="1340885239714" updateReferences="true"/>
+</session>

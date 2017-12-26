@@ -1,0 +1,25 @@
+mport javax.swing.*;
+import java.awt.*;
+
+public class Estudos extends JFrame{
+  public Estudos(){
+    super("Como usar a classe GridBagLayout");
+
+    // define o layout
+    setLayout(new GridBagLayout());
+
+    // adiciona componentes à janela
+    add(new JButton("Botão 1"));
+    add(new JButton("Botão 2"));
+    add(new JButton("Botão 3"));
+    add(new JButton("Botão 4"));
+    
+    setSize(350, 150);
+    setVisible(true);    
+  }
+
+  public static void main(String args[]){
+    Estudos app = new Estudos();
+    app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  }
+}

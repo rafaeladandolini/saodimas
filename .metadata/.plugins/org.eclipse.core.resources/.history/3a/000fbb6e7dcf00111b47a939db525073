@@ -1,0 +1,130 @@
+package br.com.saodimas.model.dao.factory.impl;
+
+import br.com.saodimas.model.dao.ApoliceDAO;
+import br.com.saodimas.model.dao.AssociadoDAO;
+import br.com.saodimas.model.dao.CidadeDAO;
+import br.com.saodimas.model.dao.ClienteDAO;
+import br.com.saodimas.model.dao.ColaboradorDAO;
+import br.com.saodimas.model.dao.CompraDAO;
+import br.com.saodimas.model.dao.EmpresaCompraDAO;
+import br.com.saodimas.model.dao.EmpresaDAO;
+import br.com.saodimas.model.dao.EmprestimoEquipamentoDAO;
+import br.com.saodimas.model.dao.EquipamentoDAO;
+import br.com.saodimas.model.dao.FaturaDAO;
+import br.com.saodimas.model.dao.ObitoDAO;
+import br.com.saodimas.model.dao.ParceiroDAO;
+import br.com.saodimas.model.dao.PlanoDAO;
+import br.com.saodimas.model.dao.ProdutoDAO;
+import br.com.saodimas.model.dao.ProdutoObitoDAO;
+import br.com.saodimas.model.dao.RelacaoDAO;
+import br.com.saodimas.model.dao.ServicoDAO;
+import br.com.saodimas.model.dao.ServicoObitoDAO;
+import br.com.saodimas.model.dao.factory.DAOFactory;
+import br.com.saodimas.model.dao.impl.ApoliceDAOImpl;
+import br.com.saodimas.model.dao.impl.AssociadoDAOImpl;
+import br.com.saodimas.model.dao.impl.CidadeDAOImpl;
+import br.com.saodimas.model.dao.impl.ClienteDAOImpl;
+import br.com.saodimas.model.dao.impl.ColaboradorDAOImpl;
+import br.com.saodimas.model.dao.impl.CompraDAOImpl;
+import br.com.saodimas.model.dao.impl.EmpresaCompraDAOImpl;
+import br.com.saodimas.model.dao.impl.EmpresaDAOImpl;
+import br.com.saodimas.model.dao.impl.EmprestimoEquipamentoDAOImpl;
+import br.com.saodimas.model.dao.impl.EquipamentoDAOImpl;
+import br.com.saodimas.model.dao.impl.FaturaDAOImpl;
+import br.com.saodimas.model.dao.impl.ObitoDAOImpl;
+import br.com.saodimas.model.dao.impl.ParceiroDAOImpl;
+import br.com.saodimas.model.dao.impl.PlanoDAOImpl;
+import br.com.saodimas.model.dao.impl.ProdutoDAOImpl;
+import br.com.saodimas.model.dao.impl.ProdutoObitoDAOImpl;
+import br.com.saodimas.model.dao.impl.RelacaoDAOImpl;
+import br.com.saodimas.model.dao.impl.ServicoDAOImpl;
+import br.com.saodimas.model.dao.impl.ServicoObitoDAOImpl;
+
+
+public class HibernateDAOFactory extends DAOFactory{
+
+	public ApoliceDAO buildApoliceDAO() {
+		return new ApoliceDAOImpl();
+	}
+
+	public AssociadoDAO buildAssociadoDAO() {
+		return new AssociadoDAOImpl();
+	}
+
+	public CidadeDAO buildCidadeDAO() {
+		
+		return new CidadeDAOImpl();
+	}
+
+	public ColaboradorDAO buildColaboradorDAO() {
+		return new ColaboradorDAOImpl();
+	}
+	
+	public ClienteDAO buildClienteDAO() {
+		return new ClienteDAOImpl();
+	}
+	
+	public CompraDAO buildCompraDAO() {
+		return new CompraDAOImpl();
+	}
+
+	public EmpresaDAO buildEmpresaDAO() {
+		return new EmpresaDAOImpl();
+	}
+	
+	public EmpresaCompraDAO buildEmpresaCompraDAO() {
+		return new EmpresaCompraDAOImpl();
+	}
+
+	public FaturaDAO buildFaturaDAO() {
+		return new FaturaDAOImpl();
+	}
+
+	public ObitoDAO buildObitoDAO() {
+		return new ObitoDAOImpl();
+	}
+
+	public PlanoDAO buildPlanoDAO() {
+		return new PlanoDAOImpl();
+	}
+
+	public ProdutoDAO buildProdutoDAO() {
+		return new ProdutoDAOImpl();
+	}
+
+	public RelacaoDAO buildRelacaoDAO() {
+		return new RelacaoDAOImpl();
+	}
+
+	public ServicoDAO buildServicoDAO() {
+		return new ServicoDAOImpl();
+	}
+
+	public ProdutoObitoDAO buildProdutoObitoDAO() {
+		return new ProdutoObitoDAOImpl();
+	}
+	
+	public ProdutoCompraDAO buildProdutoCompraDAO() {
+		return new ProdutoCompraDAOImpl();
+	}
+
+
+	public ServicoObitoDAO buildServicoObitoDAO() {
+		return new ServicoObitoDAOImpl();
+	}
+
+	public ParceiroDAO buildParceiroDAO() {
+		return new ParceiroDAOImpl();
+	}
+
+	@Override
+	public EquipamentoDAO buildEquipamentoDAO() {
+		return new EquipamentoDAOImpl();
+	}
+
+	@Override
+	public EmprestimoEquipamentoDAO buildEmprestimoEquipamentoDAO() {
+		return new EmprestimoEquipamentoDAOImpl();
+	}
+
+}

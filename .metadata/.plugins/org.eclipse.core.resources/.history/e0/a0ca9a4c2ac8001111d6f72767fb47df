@@ -1,0 +1,310 @@
+package br.com.saodimas.view.components.panel.obito;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.CidadeVO;
+import br.com.saodimas.model.beans.ObitoVO;
+import br.com.saodimas.view.components.document.CustomDocument;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.spinner.DataSpinner;
+import br.com.saodimas.view.util.ExpReg;
+
+@SuppressWarnings("serial")
+public class ConsultaObitoPanel extends JPanel {
+	private static final String MENSAGEM_PADRAO = " ";
+	
+	private BarraNotificacao barNotificacao;
+	
+	private JLabel lbOpcoes;
+	private JLabel lbCidade;
+	private JLabel lbContrato;
+	private JLabel lbNome;
+	private JLabel lbData;
+	
+	private JComboBox comboOpcoes;
+	private JComboBox cbCidades;
+	private DataSpinner spnDataIni;
+	private DataSpinner spnDataFin;
+	private JPanel panelPeriodo;
+	private JTextField txtContrato;
+	private JTextField txtNome;
+	
+	private JButton btCancelar;
+	private JButton btEnviar;
+	
+	
+	private static final int QUALQUER = 0;
+	private static final int CONTRATO = 1;
+	private static final int NOME = 2;
+	private static final int DATA = 3;
+	private static final String[] OPCOES_CONSULTA = {"Qualquer","N. Apólice","Nome","Data do Óbito"}; 
+
+	private static final Dimension DLABEL = new Dimension(120,22);
+	private static final Dimension DFIELDM = new Dimension(115,22);
+	
+	
+	public ConsultaObitoPanel() {
+		initialize();
+		configure();
+	}
+
+		
+	public void focoPadrao(){
+		
+		this.loadCidades();
+	}	
+	
+	private void loadCidades()
+	{
+		cbCidades.removeAllItems();
+		List<CidadeVO> list = Controller.getInstance().getCidadeAll();
+		CidadeVO cidadeTodos = new CidadeVO();
+		cidadeTodos.setId(null);
+		cidadeTodos.setNome("Todas");
+		cbCidades.addItem(cidadeTodos);
+		for ( int i = 0 ; i < list.size(); i++) {
+			cbCidades.addItem(list.get(i));
+		}
+		
+		
+	}
+	
+	public void limparCampos() {
+		txtNome.setText("");
+		txtContrato.setText("");
+		spnDataIni.setValue(new Date(Calendar.getInstance().getTimeInMillis()));
+		spnDataFin.setValue(new Date(Calendar.getInstance().getTimeInMillis()));
+		comboOpcoes.setSelectedIndex(1);
+		barNotificacao.escondeMensagem();
+		txtContrato.requestFocus();
+	}
+
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+		
+		lbOpcoes = new JLabel("Pesquisar por... ", JLabel.RIGHT);
+		lbOpcoes.setVisible(true);
+		
+		lbCidade = new JLabel("Cidade: ", JLabel.RIGHT);
+		lbCidade.setPreferredSize(DLABEL);
+		lbCidade.setMinimumSize(DLABEL);
+		lbCidade.setVisible(true);
+		
+		cbCidades = new JComboBox();
+		cbCidades.setVisible(true);
+		
+		comboOpcoes = new JComboBox(OPCOES_CONSULTA);
+		comboOpcoes.setPreferredSize(DLABEL);
+		comboOpcoes.setMinimumSize(DLABEL);
+		comboOpcoes.setVisible(true);
+		
+		lbContrato = new JLabel("N. Apólice.:", JLabel.RIGHT);
+		lbContrato.setPreferredSize(DLABEL);
+		lbContrato.setMinimumSize(DLABEL);
+		lbContrato.setVisible(true);
+
+		CustomDocument contrDoc = new CustomDocument(ExpReg.NUMERIC, 20);
+		txtContrato = new JTextField();
+		txtContrato.setDocument(contrDoc);
+		txtContrato.setPreferredSize(DFIELDM);
+		txtContrato.setVisible(true);
+		txtContrato.requestFocus();
+
+		lbNome = new JLabel("Que contenha... ", JLabel.RIGHT);
+		lbNome.setPreferredSize(DLABEL);
+		lbNome.setMinimumSize(DLABEL);
+		lbNome.setVisible(false);
+		
+		CustomDocument nomeDoc = new CustomDocument(50);
+		txtNome = new JTextField();
+		txtNome.setDocument(nomeDoc);
+		txtNome.setPreferredSize(DFIELDM);
+		txtNome.setVisible(false);
+		
+		SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.YEAR, -500);
+		String dataIni = f.format(new Date(c.getTimeInMillis()));
+
+		c = Calendar.getInstance();
+		c.add(Calendar.MONTH, -1);
+		String dataSel = f.format(new Date(c.getTimeInMillis()));
+
+		String dataFin = f.format(new Date(Calendar.getInstance().getTimeInMillis()));
+
+		spnDataIni = new DataSpinner(dataSel, dataIni, dataFin);
+		spnDataIni.setPreferredSize(DFIELDM);
+		spnDataIni.setMinimumSize(DFIELDM);
+
+		spnDataFin = new DataSpinner(dataFin, dataIni, dataFin);
+		spnDataFin.setPreferredSize(DFIELDM);
+		spnDataFin.setMinimumSize(DFIELDM);
+
+		panelPeriodo = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		panelPeriodo.add(spnDataIni);
+		panelPeriodo.add(new JLabel(" a "));
+		panelPeriodo.add(spnDataFin);
+		panelPeriodo.setMinimumSize(new Dimension(200, 22));
+		panelPeriodo.setBorder(BorderFactory.createEmptyBorder());
+		panelPeriodo.setVisible(false);
+		
+			
+		btCancelar = new JButton("Cancelar", new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+		
+		btEnviar = new JButton("Enviar", new ImageIcon("imagens/submit.gif"));
+		btEnviar.addActionListener(new EventoBotaoControle());
+		btEnviar.setHorizontalAlignment(JButton.LEFT);
+	}
+	
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infServico = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+
+		c.gridy = 0; infServico.add(lbOpcoes, c);
+		c.gridy = 1; infServico.add(lbCidade, c);
+						
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.fill = GridBagConstraints.NONE;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridy = 0; infServico.add(comboOpcoes, c);
+		c.gridy = 1; infServico.add(cbCidades, c);
+				
+		infServico.setBorder(BorderFactory.createTitledBorder("Parâmetros da consulta"));
+		adicionarAtalhosComandos(infServico);
+		
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(btEnviar);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+		
+		JPanel panelServico = new JPanel(new BorderLayout());
+		panelServico.add(barNotificacao, BorderLayout.NORTH);
+		panelServico.add(infServico, BorderLayout.CENTER);
+		panelServico.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelServico);
+		
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelServico);
+		adicionarAtalhosComandos(formPrincipal);
+		
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+		
+		
+	}
+	
+	private void adicionarAtalhosComandos(JPanel panel){
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter(){
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) btEnviar.doClick();
+					else super.keyPressed(e);
+				}
+			});
+		}
+	}	
+	
+	private Component getPainelPrincipal(){
+		Component c = getParent();
+		while (c != null){
+			if (c instanceof ObitoMainPanel) return c;
+			c = c.getParent();
+		}
+		return c;
+	}	
+	
+
+		
+	private class EventoBotaoControle implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			ObitoMainPanel c = (ObitoMainPanel)getPainelPrincipal();
+			if (e.getSource() == btCancelar){
+				c.getIFrameConsObito().setVisible(false);
+			}
+			else if (e.getSource() == btEnviar){
+				consultaObitos();
+			}
+		}
+	}
+
+	private String[] getParamentros()
+	{
+		List<String> p = new ArrayList<String>();
+		String[] parametros = null;
+
+		if(comboOpcoes.getSelectedItem().toString().equals(OPCOES_CONSULTA[NOME]))
+			p.add(txtNome.getText());
+		else if(comboOpcoes.getSelectedItem().toString().equals(OPCOES_CONSULTA[CONTRATO]))	
+			p.add(txtContrato.getText());
+	    else if(comboOpcoes.getSelectedItem().toString().equals(OPCOES_CONSULTA[DATA])){
+			p.add(new SimpleDateFormat("dd/MM/yyyy").format((Date)spnDataIni.getValue()));
+	 		p.add(new SimpleDateFormat("dd/MM/yyyy").format((Date)spnDataFin.getValue()));
+		}
+		else
+			p = null;
+
+		if(p != null){
+			parametros = new String[p.size()];
+			p.toArray(parametros);
+		}
+		return parametros;
+	}
+	
+	private void consultaObitos(){
+		ObitoMainPanel c = (ObitoMainPanel)getPainelPrincipal();
+		String tipo = comboOpcoes.getSelectedItem().toString();
+		List <ObitoVO> obitoList = Controller.getInstance().consultaObitos(tipo, getParamentros(), (CidadeVO)cbCidades.getSelectedItem());
+		
+		if (obitoList.size() > 0){
+			c.carregarObitoTable(obitoList);
+			c.mostrarMensagem("Consulta efetuada com sucesso! " + (obitoList.size() == 1 ? " Apenas 1 obito encontrado ..." : obitoList.size() + " obitos encontrados ..."), BarraNotificacao.SUCESSO);
+			c.getIFrameConsObito().setVisible(false);
+		}
+		else{
+			c.carregarObitoTable(null);
+			c.mostrarMensagem("", BarraNotificacao.DEFAULT);
+			barNotificacao.mostrarMensagem("Nenhum obito encontrado com esses critérios...", BarraNotificacao.ERRO);
+		}
+	}
+	
+	
+	
+}

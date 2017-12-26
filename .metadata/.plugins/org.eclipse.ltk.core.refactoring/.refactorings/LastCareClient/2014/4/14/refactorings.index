@@ -1,0 +1,14 @@
+1396362097852	Rename field 'dataCompra'
+1396362121045	Rename field 'cbEmpresa'
+1396362139428	Rename field 'lbEmpresa'
+1396362298967	Rename field 'dataCompra'
+1396362318199	Rename field 'cbFornecedor'
+1396362331431	Copy compilation unit
+1396362343083	Rename type 'CompraProdutoPanel'
+1396362443570	Rename local variable 'dadosCompraPAnel'
+1396362510239	Rename field 'compraVo'
+1396362585010	Rename local variable 'compra'
+1396362696408	Rename field 'removerProdutosCOmpra'
+1396362769239	Copy compilation unit
+1396362789342	Copy compilation unit
+1396363797613	Rename method 'carregarEmpresas'

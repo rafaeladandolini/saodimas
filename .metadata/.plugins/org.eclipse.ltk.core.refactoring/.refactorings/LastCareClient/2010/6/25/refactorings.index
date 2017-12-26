@@ -1,0 +1,77 @@
+1276706807555	Rename field 'PRECO'
+1276706912804	Rename field 'PRECO'
+1276779806224	Move compilation unit
+1276779816221	Delete element
+1276779847232	Move elements
+1276779858272	Delete element
+1276779877065	Move compilation unit
+1276779879187	Delete element
+1276785370043	Rename method 'getDica'
+1276794087627	Copy compilation unit
+1276794111208	Rename type 'Parceiro'
+1276794137732	Copy compilation unit
+1276796394570	Copy compilation unit
+1276796397608	Copy compilation unit
+1276796409416	Rename type 'ColaboradorMainPanel'
+1276796420389	Rename type 'ColaboradorPanel'
+1276796452713	Copy compilation unit
+1276796483069	Copy compilation unit
+1276796855558	Rename local variable 'listaColaboradores'
+1276797132960	Rename field 'tbColaboradores'
+1276797146934	Copy compilation unit
+1276797164301	Rename field 'iframeColaborador'
+1276797417945	Rename field 'colaboradorPanel'
+1276797596960	Rename local variable 'colaborador'
+1276797603902	Rename local variable 'Parceiro'
+1276800927052	Rename local variable 'infColaborador'
+1276808356382	Copy compilation unit
+1276808861122	Copy compilation unit
+1276868046953	Copy package
+1276868051092	Copy compilation unit
+1276868063772	Rename type 'ApoliceEditarFaturaPanel'
+1276868825111	Delete element
+1276869381174	Copy compilation unit
+1276871096020	Copy compilation unit
+1276871120166	Rename type 'VisualizarFaturaIFrame'
+1276871152209	Rename field 'logonPanel'
+1276871539814	Rename field 'btVisualizar'
+1276871558577	Rename method 'visualizarFatura'
+1276880259466	Copy compilation unit
+1276880289121	Copy compilation unit
+1276880941529	Copy compilation unit
+1276880965254	Copy compilation unit
+1276881888147	Delete element
+1276881905931	Copy compilation units
+1276881918738	Rename type 'ColaboradorMainPanel'
+1276881928145	Rename type 'ColaboradorPanel'
+1276887758438	Copy compilation unit
+1276887781869	Copy compilation unit
+1276888432964	Copy compilation unit
+1276888602661	Rename field 'iframeColaborador'
+1276888632457	Rename field 'tbColaboradores'
+1276891436921	Copy compilation unit
+1276891449495	Copy compilation unit
+1276891475453	Rename type 'EmpresatimoEquipamentoPanel'
+1276891479962	Rename type 'EmpresatimoEquipamentoMainPanel'
+1276891575231	Rename field 'lbDescricao'
+1276891583327	Rename field 'lbModelo'
+1276891597367	Rename field 'lbDataAquisicao'
+1276891604762	Rename field 'lbStatus'
+1276891677473	Rename field 'equipamento'
+1276892099563	Rename method 'validarEquipamento'
+1276892868190	Copy compilation units
+1276892892074	Delete element
+1276892963849	Copy compilation unit
+1276892974691	Copy compilation unit
+1276893374800	Copy compilation unit
+1276893874234	Copy compilation unit
+1276893887401	Copy compilation unit
+1276894339411	Rename type 'EmprestimoEquipamentoMainPanel'
+1276894351064	Rename type 'EmprestimoEquipamentoPanel'
+1276895640918	Rename type 'EmprestimoEquipamentoApolicePanel'
+1276895657077	Rename type 'EmprestimoEquipamentoApoliceMainPanel'
+1276895754998	Rename field 'tbDependentes'
+1276992027795	Copy compilation unit
+1276992221514	Rename method 'validarEmprestimoEquipamento'
+1276992407178	Copy compilation unit
+1276994308150	Rename resource 'novo_produto.gif'

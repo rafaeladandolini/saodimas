@@ -1,0 +1,65 @@
+package br.com.saodimas.principal;
+
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ColaboradorVO;
+import br.com.saodimas.view.components.window.SaoDimasSplash;
+import br.com.saodimas.view.util.ListasComuns;
+import br.com.saodimas.view.util.WinManager;
+
+public class SaoDimasMain {
+	
+	public static ColaboradorVO colaborador;
+	public static SaoDimasSplash splash = null; 
+	
+	public static void main(String args[]){
+		
+		try {
+			//splash = new SaoDimasSplash();
+			//JFrame.setDefaultLookAndFeelDecorated(true);
+			
+			WinManager.iniciar();
+			
+			//SaoDimasSettings settings = Controller.getInstance().carregarPreferencias();
+			/*
+			LookAndFeel tema = null;
+			for(int i = 0; i < ListasComuns.TEMAS.length; i++){
+				if (ListasComuns.TEMAS[i].getName().compareTo(settings.getNomeTema()) == 0){
+					tema = ListasComuns.TEMAS[i];
+					break;
+				}
+			}
+			if (tema != null)
+				
+					UIManager.setLookAndFeel(tema);
+			
+			*/
+			/*
+			SwingUtilities.invokeLater(new SwingWorker<Void, Void>(){
+				@Override
+				protected Void doInBackground(){
+					try{
+					WinManager.iniciar();
+					}catch(Exception e)
+					{
+						System.exit(0);
+					}
+					return null;
+				}
+			});
+		
+			*/
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Erro inesperado. Contate o administrador do sistema: " + e.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE );
+		}
+	
+	}
+}

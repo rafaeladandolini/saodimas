@@ -1,0 +1,58 @@
+package br.com.saodimas.view.components.iframe;
+
+import javax.swing.ImageIcon;
+import javax.swing.JInternalFrame;
+
+import br.com.saodimas.model.beans.EmpresaCompraVO;
+import br.com.saodimas.model.beans.RelacaoVO;
+import br.com.saodimas.view.components.panel.financeiro.empresa.EmpresaCompraPanel;
+import br.com.saodimas.view.components.panel.relacao.RelacaoTitularPanel;
+import br.com.saodimas.view.util.WinManager;
+
+@SuppressWarnings("serial")
+public class EmpresaCompraIFrame extends JInternalFrame {
+	private EmpresaCompraPanel empresaCompraPanel;
+	
+	public EmpresaCompraIFrame() {
+		super("Nova Empresa", false, true, false);
+		initialize();
+	}
+	
+	public EmpresaCompraIFrame(EmpresaCompraVO empresa) {
+		super("Editar Empresa", false, true, false);
+		initialize();
+		empresaCompraPanel.setEmpresaCompra(empresa);
+	}
+	
+
+	public void setEmpresaCompra(EmpresaCompraVO empresa) {
+		setTitle((empresa == null)? "Nova Empresa" : "Editar Empresa");
+		empresaCompraPanel.setEmpresaCompra(empresa);
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		habilitarControles(!visible);
+		super.setVisible(visible);
+		if (visible) empresaCompraPanel.focoPadrao();
+	}
+	
+	public void habilitarControles(boolean enable){
+		if (enable && WinManager.getJanelaInicial() != null)
+			WinManager.getJanelaInicial().habilitarTudo();
+		if (!enable && WinManager.getJanelaInicial() != null)
+			WinManager.getJanelaInicial().desabilitarTudo();
+	}
+	
+	private void initialize(){
+		empresaCompraPanel = new EmpresaCompraPanel();
+		
+		getContentPane().add(empresaCompraPanel);
+		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
+		setIconifiable(true);
+		setFrameIcon(new ImageIcon("imagens/relacaoTitular.gif"));
+		setTitle((empresaCompraPanel.getEmpresaCompraVO() == null)? "Nova empresa" : "Editar empresa");
+		pack();
+	}
+
+}

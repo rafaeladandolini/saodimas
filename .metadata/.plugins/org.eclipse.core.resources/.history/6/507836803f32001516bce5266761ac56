@@ -1,0 +1,492 @@
+package br.com.saodimas.view.components.panel.financeiro.venda;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ClienteVO;
+import br.com.saodimas.model.beans.ProdutoVendaVO;
+import br.com.saodimas.model.beans.VendaVO;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.principal.SaoDimasMain;
+import br.com.saodimas.view.components.document.CustomDocument;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.table.VendaProdutosTable;
+import br.com.saodimas.view.components.table.model.VendaProdutoTableModel;
+import br.com.saodimas.view.components.text.DataTextField;
+import br.com.saodimas.view.components.text.MoedaTextField;
+
+@SuppressWarnings("serial")
+public class VendaPanel extends JPanel {
+	private static final String MENSAGEM_PADRAO = "   (*) Preenchimento obrigatório";
+
+	private VendaVO vendaVO;
+	private BarraNotificacao barNotificacao;
+
+	
+	private JLabel lbDataVenda;
+	private JLabel lbDescricao;
+	private JLabel lbObservacao;
+	private JLabel lbFornecedor;
+	private JLabel lbTotalProduto;
+	
+	private JButton btAdicionar;
+	private JButton btRemover;
+	private JToolBar barControle;
+	
+	private JButton btCancelar;
+	private JButton btSalvar;
+
+	private DataTextField dataVenda;
+	private JTextField txtDescricao;
+	private JTextField txtObservacao;
+	private JComboBox<ClienteVO> cbCliente;
+	private MoedaTextField txtTotalProduto;
+	private List<ProdutoVendaVO> removerProdutosVenda;
+	private VendaProdutosTable tbProdutos;
+		
+
+	private static final Dimension DBUTTON = new Dimension(30, 30);
+	private static final Dimension DLABEL = new Dimension(120, 22);
+	private static final Dimension DFIELDM = new Dimension(115, 22);
+
+	public VendaPanel() {
+		initialize();
+		configure();
+	}
+
+	public VendaVO getVendaVO() {
+		return vendaVO;
+	}
+
+	public void adicionaProduto(ProdutoVendaVO p) {
+		VendaProdutoTableModel model = (VendaProdutoTableModel) tbProdutos.getModel();
+		boolean editando = false;
+
+		for (Object item : model.getDataVector()) {
+			ProdutoVendaVO planProd = (ProdutoVendaVO) item;
+
+			if (p.getId() != null && p.getId().equals(planProd.getId())) {
+				planProd.setQuantidade(p.getQuantidade());
+				editando = true;
+				break;
+			}
+		}
+
+		if (!editando) {
+
+			model.add(p);
+		}
+		model.fireTableDataChanged();
+		tbProdutos.getSelectionModel().addSelectionInterval(0, 0);
+		this.calcularTotalCompra();
+	}
+
+	public List<ProdutoVendaVO> getAllProdutos(VendaVO p) {
+		VendaProdutoTableModel model = (VendaProdutoTableModel) tbProdutos.getModel();
+		Vector<ProdutoVendaVO> v = model.getDataVector();
+		List<ProdutoVendaVO> s = new ArrayList<ProdutoVendaVO>();
+
+		for (ProdutoVendaVO produtoObitoVO : v) {
+			produtoObitoVO.setVenda(p);
+			s.add(produtoObitoVO);
+		}
+		return s;
+	}
+
+	public void carregarProdutos(List<ProdutoVendaVO> produtos) {
+		removerProdutosVenda.clear();
+
+		VendaProdutoTableModel model = (VendaProdutoTableModel) tbProdutos
+				.getModel();
+		model.removeAll();
+		if (produtos != null) {
+			for (ProdutoVendaVO prodPlano : produtos) {
+				model.add(prodPlano);
+			}
+		}
+		this.calcularTotalCompra();
+	}
+
+	public void calcularTotalCompra() {
+
+		List<ProdutoVendaVO> list = ((VendaProdutoTableModel) tbProdutos.getModel()).getDataVector();
+		txtTotalProduto.setValor(0.0);
+		for (ProdutoVendaVO vo : list) {
+			txtTotalProduto.setValor(txtTotalProduto.getValor()	+ vo.getQuantidade() * vo.getValor());
+		}
+
+	}
+
+	public void setBloqueioCampos(boolean value) {
+		btAdicionar.setEnabled(!value);
+		btRemover.setEnabled(!value);
+	}
+
+	public void setVenda(VendaVO venda) {
+		this.limparCampos();
+		this.vendaVO = venda;
+		this.carregarCliente();
+
+		dataVenda.setText(formataData(new Date()));
+
+		if (venda != null) {
+			dataVenda.setText(formataData(venda.getDataVenda()));
+			// txtObservacao.setText(venda.getObservacao());
+			txtDescricao.setText(venda.getDescricao());
+			cbCliente.setSelectedItem(venda.getCliente());
+			carregarProdutos(venda.getProdutos());
+		} else {
+			carregarProdutos(null);
+		}
+	}
+
+	public void carregarCliente() {
+		List<ClienteVO> list = Controller.getInstance().getAllClientes();
+		cbCliente.removeAllItems();
+		for (int i = 0; i < list.size(); i++) {
+			cbCliente.addItem(list.get(i));
+		}
+		cbCliente.repaint();
+	}
+
+	public void limparCampos() {
+
+		dataVenda.setText("");
+		txtDescricao.setText("");
+		txtObservacao.setText("");
+		barNotificacao.mostrarMensagem(MENSAGEM_PADRAO,	BarraNotificacao.DEFAULT);
+	}
+
+	public void focoPadrao() {
+		dataVenda.requestFocus();
+	}
+
+	private void initialize() {
+
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+
+		lbDataVenda = new JLabel("Data Venda *: ", JLabel.RIGHT);
+		lbDataVenda.setPreferredSize(DLABEL);
+		lbDataVenda.setMinimumSize(DLABEL);
+
+		dataVenda = new DataTextField();
+		dataVenda.setPreferredSize(DFIELDM);
+		dataVenda.setMinimumSize(DFIELDM);
+
+		lbFornecedor = new JLabel("Cliente: ", JLabel.RIGHT);
+		lbFornecedor.setPreferredSize(DLABEL);
+		lbFornecedor.setMinimumSize(DLABEL);
+
+		cbCliente = new JComboBox<ClienteVO>();
+
+		lbDescricao = new JLabel("Descrição: ", JLabel.RIGHT);
+		lbDescricao.setPreferredSize(DLABEL);
+		lbDescricao.setMinimumSize(DLABEL);
+
+		CustomDocument desDoc = new CustomDocument(150);
+		txtDescricao = new JTextField();
+		txtDescricao.setDocument(desDoc);
+		txtDescricao.setPreferredSize(DFIELDM);
+
+		lbObservacao = new JLabel("Observação: ", JLabel.RIGHT);
+		lbObservacao.setPreferredSize(DLABEL);
+		lbObservacao.setMinimumSize(DLABEL);
+
+		CustomDocument obsDoc = new CustomDocument(255);
+		txtObservacao = new JTextField();
+		txtObservacao.setDocument(obsDoc);
+		txtObservacao.setPreferredSize(DFIELDM);
+
+		btCancelar = new JButton("Cancelar",
+				new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+
+		btSalvar = new JButton("Salvar", new ImageIcon("imagens/save.gif"));
+		btSalvar.addActionListener(new EventoBotaoControle());
+		btSalvar.setHorizontalAlignment(JButton.LEFT);
+
+		// -----
+
+		removerProdutosVenda = new ArrayList<ProdutoVendaVO>();
+
+		btAdicionar = new JButton();
+		btAdicionar.setIcon(new ImageIcon("imagens/add.gif"));
+		btAdicionar.addActionListener(new EventoBotaoControle());
+		btAdicionar.setToolTipText("Clique para adicionar um produto ao plano!");
+		btAdicionar.setPreferredSize(DBUTTON);
+
+		btRemover = new JButton();
+		btRemover.setIcon(new ImageIcon("imagens/remove.gif"));
+		btRemover.addActionListener(new EventoBotaoControle());
+		btRemover.setToolTipText("Clique para remover um produto do plano!");
+		btRemover.setPreferredSize(DBUTTON);
+		btRemover.setEnabled(false);
+
+		lbTotalProduto = new JLabel("TOTAL COMPRA:  ", JLabel.RIGHT);
+		lbTotalProduto.setPreferredSize(DLABEL);
+		lbTotalProduto.setMinimumSize(DLABEL);
+
+		txtTotalProduto = new MoedaTextField();
+		txtTotalProduto.setPreferredSize(DFIELDM);
+		txtTotalProduto.setMinimumSize(DFIELDM);
+		txtTotalProduto.setEditable(false);
+
+		barControle = new JToolBar();
+		barControle.setFloatable(false);
+		barControle.setOpaque(false);
+		barControle.setBorderPainted(false);
+		barControle.setBorder(BorderFactory.createEmptyBorder());
+		barControle.setMargin(new Insets(0, 0, 0, 0));
+		barControle.add(btAdicionar);
+		barControle.add(btRemover);
+
+		tbProdutos = new VendaProdutosTable();
+		tbProdutos.getSelectionModel().addListSelectionListener(new EventoTabela());
+
+	}
+
+	private void configure() {
+
+		GridBagConstraints c = new GridBagConstraints();
+
+		JPanel panelDadosVenda = new JPanel(new GridBagLayout());
+		//c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		
+		c.gridx = 0;
+		c.gridy = 0;	panelDadosVenda.add(lbDataVenda, c);
+		c.gridy = 1;	panelDadosVenda.add(lbFornecedor, c);
+		c.gridy = 2;	panelDadosVenda.add(lbDescricao, c);
+		c.gridy = 3;	panelDadosVenda.add(lbObservacao, c);
+
+		c.gridx = 1;
+		c.gridy = 0;	panelDadosVenda.add(dataVenda, c);
+		c.gridy = 1;	panelDadosVenda.add(cbCliente, c);
+		c.gridy = 2;	panelDadosVenda.add(txtDescricao, c);
+		c.gridy = 3;	panelDadosVenda.add(txtObservacao, c);
+
+		/*panelDadosVenda.setBorder(BorderFactory.createTitledBorder("Dados da Venda"));
+		
+		JPanel panelControles = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		panelControles.add(btSalvar);
+		panelControles.add(btCancelar);
+		panelControles.setMinimumSize(new Dimension(200, 22));
+	
+		JPanel infProdutos = new JPanel(new GridBagLayout());
+
+		JPanel panelTotal = new JPanel();
+		panelTotal.add(lbTotalProduto);
+		panelTotal.add(txtTotalProduto);
+
+		c.anchor = GridBagConstraints.LAST_LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(0, 1, 0, 1);
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		c.gridy = 0;
+		infProdutos.add(barControle, c);
+
+		JScrollPane prodPanel = new JScrollPane(tbProdutos);
+		prodPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1;
+		c.weighty = 1;
+		c.gridx = 0; //MudarAqui
+		c.gridy = 1;
+		infProdutos.add(prodPanel, c);
+		c.gridy = 2;
+		infProdutos.add(panelTotal, c);
+
+		infProdutos.setBorder(BorderFactory.createTitledBorder("Produtos"));
+		*/
+		setLayout(new GridBagLayout());
+		//add(barNotificacao, BorderLayout.NORTH);
+		setBorder(new EmptyBorder(10, 10, 10, 10));
+		
+		c.gridheight = 4;
+		c.fill = GridBagConstraints.VERTICAL;
+		c.gridx = 0;
+		c.gridy = 0;add(panelDadosVenda);
+		c.gridx = 5;
+		c.gridy = 0; add(barControle);
+		
+		//add(infProdutos, BorderLayout.EAST);
+		//add(panelControles, BorderLayout.SOUTH);
+		//adicionarAtalhosComandos(this);
+	}
+
+	private void adicionarAtalhosComandos(JPanel panel) {
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+						btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER)
+						btSalvar.doClick();
+					else
+						super.keyPressed(e);
+				}
+			});
+		}
+	}
+
+	private void salvarCompra() {
+
+		try {
+			this.validaCampos();
+			Component c = getPainelPrincipal();
+			VendaVO novaVenda = new VendaVO();
+
+			novaVenda.setDataVenda(formataData(dataVenda.getText()));
+			novaVenda.setDescricao((txtDescricao.getText()));
+			novaVenda.setCliente((ClienteVO) cbCliente.getSelectedItem());
+			novaVenda.setColaborador(SaoDimasMain.colaborador);
+			// novaVenda.setObservacao(txtObservacao.getText());
+			novaVenda.setProdutos(getAllProdutos(novaVenda));
+
+			if (vendaVO != null) {
+				novaVenda.setId(vendaVO.getId());
+				Controller.getInstance().deleteProdutosVenda(
+						removerProdutosVenda);
+				Controller.getInstance().updateVenda(novaVenda);
+				((VendaMainPanel) c).mostrarMensagem(
+						"Alterações efetuadas com sucesso.",
+						barNotificacao.INFO);
+			} else {
+				Controller.getInstance().insertVenda(novaVenda);
+				((VendaMainPanel) c).mostrarMensagem(
+						"Cadastro efetuado com sucesso.", barNotificacao.INFO);
+			}
+
+			((VendaMainPanel) c).carregarVendas();
+			((VendaMainPanel) c).getIFrameVenda().setVisible(false);
+
+		} catch (MensagemSaoDimasException ex) {
+			barNotificacao
+					.mostrarMensagem(ex.getMessage(), barNotificacao.ERRO);
+			ex.printStackTrace();
+		} catch (ParseException e) {
+			barNotificacao.mostrarMensagem(e.getMessage(), barNotificacao.ERRO);
+			e.printStackTrace();
+		}
+	}
+
+	private String formataData(Date date) {
+		SimpleDateFormat simpledataformat = new SimpleDateFormat("dd/MM/yyyy");
+		return simpledataformat.format(date);
+
+	}
+
+	private Date formataData(String date) throws ParseException {
+		SimpleDateFormat simpledataformat = new SimpleDateFormat("dd/MM/yyyy");
+		return simpledataformat.parse(date);
+
+	}
+
+	private void validaCampos() throws MensagemSaoDimasException {
+		if (dataVenda.getText().trim().equals("")) {
+			throw new MensagemSaoDimasException(
+					"Campo DATA COMPRA é obrigatório...");
+		}/*
+		 * else if(txtDescricao.getText().trim().equals("")) { throw new
+		 * MensagemSaoDimasException("Campo DESCRICAO é obrigatório..."); }
+		 */else if (!dataVenda.getText().trim().equals("")) {
+			try {
+				formataData(dataVenda.getText().trim());
+			} catch (ParseException e) {
+				throw new MensagemSaoDimasException(
+						"Campo DATA COMPRA não é valido...");
+			}
+		}
+
+	}
+
+	private class EventoTabela implements ListSelectionListener {
+		public void valueChanged(ListSelectionEvent arg0) {
+			btRemover.setEnabled(tbProdutos.getSelectedRow() > -1);
+
+		}
+	}
+
+	private VendaMainPanel getPainelPrincipal() {
+		Component c = getParent();
+		while (c != null) {
+			if (c instanceof VendaMainPanel)
+				return (VendaMainPanel) c;
+			c = c.getParent();
+		}
+		return (VendaMainPanel) c;
+	}
+
+	private class EventoBotaoControle implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			VendaMainPanel c = getPainelPrincipal();
+			if (e.getSource() == btAdicionar) {
+				c.getIFrameVendaProduto().setVisible(true);
+				c.getIFrameVendaProduto().setProduto(null);
+			} else if (e.getSource() == btRemover) {
+				if (c.mostraConfirmacao("Confirmação",
+						"Confirma a remoção do produto para este óbito?",
+						JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+					VendaProdutoTableModel model = (VendaProdutoTableModel) tbProdutos
+							.getModel();
+					int row = tbProdutos.getSelectedRow();
+					removerProdutosVenda.add((ProdutoVendaVO) model
+							.getSelectedValue(row));
+					model.removeAt(row);
+					calcularTotalCompra();
+				}
+			} else if (e.getSource() == btCancelar) {
+				try {
+					((VendaMainPanel) c).getIFrameVenda().setVisible(false);
+				} catch (ClassCastException cex) {
+					cex.printStackTrace();
+				}
+			} else if (e.getSource() == btSalvar) {
+				salvarCompra();
+			}
+
+		}
+
+	}
+
+}

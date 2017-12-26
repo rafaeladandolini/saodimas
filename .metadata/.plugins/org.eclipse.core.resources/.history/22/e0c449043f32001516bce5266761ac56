@@ -1,0 +1,52 @@
+public class Estudos extends JFrame{
+  public Estudos(){
+    super("Como usar a classe GridBagLayout");
+
+    // define o layout
+    setLayout(new GridBagLayout());
+    
+    // define uma borda para aumentar o espaço
+    // entre as bordas da janela e o gerenciador
+    // de layout
+    ((JComponent)getContentPane()).setBorder(
+       new EmptyBorder(10, 10, 10, 10));
+
+    // cria o GridBagConstraints
+    GridBagConstraints gbc = new GridBagConstraints();
+
+    // controla o espaço entre os componentes
+    // e as linhas do GridBagLayout.
+    // aqui nós definimos 2 pixels para os
+    // lados de cima, esquerda, inferior e direita
+    gbc.insets = new Insets(2, 2, 2, 2);
+
+    // adiciona componentes à janela
+    // este primeiro botão ocupará duas células
+    // na primeira coluna
+    gbc.gridy = 0; // linha
+    gbc.gridx = 0; // coluna
+    gbc.gridheight = 2; // duas células na coluna
+    // redimensiona o botão para ocupar toda a célula
+    gbc.fill = GridBagConstraints.VERTICAL;
+    add(new JButton("Botão 1"), gbc);
+
+    gbc.gridy = 0; // linha
+    gbc.gridx = 1; // coluna
+    gbc.gridheight = 1;
+    gbc.fill = GridBagConstraints.NONE; // zera o fill
+    add(new JButton("Botão 2"), gbc);
+
+    gbc.gridy = 1; // linha
+    gbc.gridx = 1; // coluna
+    add(new JButton("Botão 3"), gbc);    
+    
+    pack(); // ajusta o tamanho da janela ao
+            // dos componentes
+    setVisible(true);    
+  }
+
+  public static void main(String args[]){
+    Estudos app = new Estudos();
+    app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  }
+}

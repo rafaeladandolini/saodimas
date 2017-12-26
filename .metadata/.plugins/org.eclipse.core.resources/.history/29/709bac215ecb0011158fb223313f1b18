@@ -1,0 +1,386 @@
+package br.com.saodimas.view.components.panel.cliente;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+
+import br.com.saodimas.controller.Controller;
+import br.com.saodimas.model.beans.ClienteVO;
+import br.com.saodimas.model.beans.ColaboradorVO;
+import br.com.saodimas.model.exception.MensagemSaoDimasException;
+import br.com.saodimas.view.components.document.CustomDocument;
+import br.com.saodimas.view.components.panel.BarraNotificacao;
+import br.com.saodimas.view.components.text.LoginTextField;
+import br.com.saodimas.view.util.ExpReg;
+import br.com.saodimas.view.util.ListasComuns;
+
+@SuppressWarnings("serial")
+public class ClientePanel extends JPanel {
+	private static final String MENSAGEM_PADRAO = "   (*) Preenchimento obrigatório";
+
+	private ColaboradorVO colaborador;
+	private BarraNotificacao barNotificacao;
+	private JTextField txtNome;
+	private LoginTextField txtLogin;
+	private JTextField txtDataCadastro;
+	private JTextField txtMatricula;
+	private JRadioButton rdAdmin;
+	private JRadioButton rdFunc;
+	private ButtonGroup bgrTipo;
+	private JPasswordField pwdSenha;
+	private JPasswordField pwdConfSenha;
+	private JComboBox cbSituacao;
+	private JButton btCancelar;
+	private JButton btSalvar;
+	
+	private JLabel lbNome;
+	private JLabel lbLogin;
+	private JLabel lbDataCadastro;
+	private JLabel lbMatricula;
+	private JLabel lbTipo;
+	private JLabel lbSenha;
+	private JLabel lbConfSenha;
+	private JLabel lbSituacao;
+	
+//	private ErrorButton btErroNome;
+//	private ErrorButton btErroLogin;
+//	private ErrorButton btErroMatricula;
+//	private ErrorButton btErroSenha;
+//	private ErrorButton btErroRSenha;
+	
+	private static final Dimension DLABEL = new Dimension(120,22);
+	private static final Dimension DFIELDM = new Dimension(115,22);
+	
+	public ClientePanel() {
+		initialize();
+		configure();
+	}
+
+	public ClienteVO getClienteVO() {
+		return colaborador;
+	}
+
+	public void setCliente(ClienteVO cliente) {
+		this.colaborador = colaborador;
+		if(colaborador != null){
+			txtNome.setText(colaborador.getNome());
+			txtMatricula.setText(colaborador.getMatricula());
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			txtDataCadastro.setText(sdf.format(colaborador.getDataCadastro()));
+			txtLogin.setText(colaborador.getLogin());
+			cbSituacao.setSelectedItem(colaborador.getStatus());
+			cbSituacao.setEnabled(true);
+			pwdSenha.setText(colaborador.getSenha());
+			pwdConfSenha.setText(colaborador.getSenha());
+			
+			if(colaborador.getTipoColaborador().equals(rdAdmin.getText()))
+			{
+				rdAdmin.doClick();
+			}else{
+				rdFunc.doClick();
+			}
+		}
+		else{limparCampos();}
+	}
+
+	public void limparCampos() {
+		txtNome.setText("");
+		txtLogin.setText("");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		txtDataCadastro.setText(sdf.format(new Date()));
+		txtMatricula.setText("");
+		txtLogin.setText("");
+		pwdConfSenha.setText("");
+		pwdSenha.setText("");
+		bgrTipo.setSelected(rdFunc.getModel(), true);
+		cbSituacao.setSelectedItem(ListasComuns.STATUS_ITENS[0]);
+		cbSituacao.setEnabled(false);
+	}
+	
+	public void focoPadrao(){
+		txtNome.requestFocus();
+	}
+
+	private void initialize() {
+		barNotificacao = new BarraNotificacao(MENSAGEM_PADRAO);
+		lbNome = new JLabel("Nome: *", JLabel.RIGHT);
+		lbNome.setPreferredSize(DLABEL);
+		lbNome.setMinimumSize(DLABEL);
+		
+		CustomDocument nomeDoc = new CustomDocument(50);
+		txtNome = new JTextField();
+		txtNome.setDocument(nomeDoc);
+		txtNome.setPreferredSize(DFIELDM);
+		
+		lbLogin = new JLabel("Login: *", JLabel.RIGHT);
+		lbLogin.setPreferredSize(DLABEL);
+		lbLogin.setMinimumSize(DLABEL);
+		
+		txtLogin = new LoginTextField();
+		txtLogin.setPreferredSize(DFIELDM);
+		txtLogin.setMinimumSize(DFIELDM);
+		txtLogin.setEditable(colaborador == null);
+		
+		lbDataCadastro = new JLabel("Data Cadastro:  ", JLabel.RIGHT);
+		lbDataCadastro.setPreferredSize(DLABEL);
+		lbDataCadastro.setMinimumSize(DLABEL);
+		
+		SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+		Calendar c = Calendar.getInstance();
+		String dataFin = f.format(new Date(c.getTimeInMillis()));
+
+		txtDataCadastro = new JTextField(dataFin);
+		txtDataCadastro.setPreferredSize(DFIELDM);
+		txtDataCadastro.setMinimumSize(DFIELDM);
+		txtDataCadastro.setEditable(false);
+
+		lbMatricula = new JLabel("Matrícula: *", JLabel.RIGHT);
+		lbMatricula.setPreferredSize(DLABEL);
+		lbMatricula.setMinimumSize(DLABEL);
+		
+		CustomDocument matriculaDoc = new CustomDocument(ExpReg.NUMERIC, 10);
+		
+		txtMatricula = new JTextField("");
+		txtMatricula.setDocument(matriculaDoc);
+		txtMatricula.setPreferredSize(DFIELDM);
+		txtMatricula.setMinimumSize(DFIELDM);
+		
+		lbTipo = new JLabel("Tipo:  ", JLabel.RIGHT);
+		lbTipo.setPreferredSize(DLABEL);
+		lbTipo.setMinimumSize(DLABEL);
+		
+		rdAdmin = new JRadioButton("Administrador");
+		rdAdmin.addActionListener(new EventoRadioTipo());
+		
+		rdFunc = new JRadioButton("Funcionário");
+		rdFunc.addActionListener(new EventoRadioTipo());
+		
+		bgrTipo = new ButtonGroup();
+		bgrTipo.add(rdFunc);
+		bgrTipo.add(rdAdmin);
+		bgrTipo.setSelected(rdFunc.getModel(), true);
+		
+		lbSenha = new JLabel("Senha: *", JLabel.RIGHT);
+		pwdSenha = new JPasswordField();
+		pwdSenha.setPreferredSize(DFIELDM);
+		pwdSenha.setMinimumSize(DFIELDM);
+		
+		lbConfSenha = new JLabel("Redigite a Senha: *", JLabel.RIGHT);
+		pwdConfSenha = new JPasswordField();
+		pwdConfSenha.setPreferredSize(DFIELDM);
+		pwdConfSenha.setMinimumSize(DFIELDM);
+		
+		lbSituacao = new JLabel("Status:  ", JLabel.RIGHT);
+		lbSituacao.setPreferredSize(DLABEL);
+		lbSituacao.setMinimumSize(DLABEL);
+		
+		cbSituacao = new JComboBox(ListasComuns.STATUS_ITENS);
+		cbSituacao.setEnabled(colaborador != null);
+		cbSituacao.setPreferredSize(DFIELDM);
+		cbSituacao.setMinimumSize(DFIELDM);
+		
+		btCancelar = new JButton("Cancelar", new ImageIcon("imagens/cancel.gif"));
+		btCancelar.addActionListener(new EventoBotaoControle());
+		btCancelar.setHorizontalAlignment(JButton.LEFT);
+		
+		btSalvar = new JButton("Salvar", new ImageIcon("imagens/save.gif"));
+		btSalvar.addActionListener(new EventoBotaoControle());
+		btSalvar.setHorizontalAlignment(JButton.LEFT);
+	}
+	
+	private void configure() {
+		GridBagConstraints c = new GridBagConstraints();
+		JPanel infUser = new JPanel(new GridBagLayout());
+
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.insets = new Insets(1, 1, 2, 1);
+		c.weightx = 0;
+
+		c.gridy = 0; infUser.add(lbTipo, c);
+		c.gridy = 1; infUser.add(lbSituacao, c);
+		c.gridy = 2; infUser.add(lbDataCadastro, c);
+		c.gridy = 3; infUser.add(lbNome, c);
+		c.gridy = 4; infUser.add(lbLogin, c);
+		c.gridy = 5; infUser.add(lbMatricula, c);
+		c.gridy = 6; infUser.add(lbSenha, c);
+		c.gridy = 7; infUser.add(lbConfSenha, c);		
+		
+		JPanel panelTipo = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		panelTipo.add(rdFunc);
+		panelTipo.add(rdAdmin);
+		panelTipo.setMinimumSize(new Dimension(200, 22));
+		
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1;
+		c.weighty = 0;
+		c.gridx = 1;
+		c.gridy = 0; infUser.add(panelTipo, c);
+		c.fill = GridBagConstraints.NONE;
+		c.gridy = 1; infUser.add(cbSituacao, c);
+		c.gridy = 2; infUser.add(txtDataCadastro, c);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridy = 3; infUser.add(txtNome, c);
+		c.fill = GridBagConstraints.NONE;
+		c.gridy = 4; infUser.add(txtLogin, c);
+		c.gridy = 5; infUser.add(txtMatricula, c);
+		c.gridy = 6; infUser.add(pwdSenha, c);
+		c.weighty = 1;
+		c.gridy = 7; infUser.add(pwdConfSenha, c);
+		
+		infUser.setBorder(BorderFactory.createTitledBorder("Identificação"));
+		adicionarAtalhosComandos(infUser);
+		
+		JPanel controle = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controle.add(btSalvar);
+		controle.add(btCancelar);
+		controle.setMinimumSize(new Dimension(200, 22));
+		adicionarAtalhosComandos(controle);
+		
+		JPanel panelColaborador = new JPanel(new BorderLayout());
+		panelColaborador.add(barNotificacao, BorderLayout.NORTH);
+		panelColaborador.add(infUser, BorderLayout.CENTER);
+		panelColaborador.add(controle, BorderLayout.SOUTH);
+		adicionarAtalhosComandos(panelColaborador);
+		
+		JPanel formPrincipal = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		formPrincipal.add(panelColaborador);
+		adicionarAtalhosComandos(formPrincipal);
+		
+		setLayout(new BorderLayout());
+		add(formPrincipal, BorderLayout.CENTER);
+		adicionarAtalhosComandos(this);
+	}
+	
+	private void adicionarAtalhosComandos(JPanel panel){
+		for (Component c : panel.getComponents()) {
+			c.addKeyListener(new KeyAdapter(){
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) btCancelar.doClick();
+					else if (e.getKeyCode() == KeyEvent.VK_ENTER) btSalvar.doClick();
+					else super.keyPressed(e);
+				}
+			});
+		}
+	}
+	
+	private Component getPainelPrincipal(){
+		Component c = getParent();
+		while (c != null){
+			if (c instanceof ClienteMainPanel) return c;
+			c = c.getParent();
+		}
+		return c;
+	}	
+	
+
+	
+	private class EventoRadioTipo implements ActionListener{
+		public void actionPerformed(ActionEvent ev) {
+			boolean isFuncionario = (ev.getSource() == rdFunc);
+			
+			lbMatricula.setVisible(isFuncionario);
+			txtMatricula.setVisible(isFuncionario);
+		}
+	}
+	
+	
+	/*private boolean validaCampos()
+	{
+		String erros = "";
+		erros += ValidaApolice.validarPlano((PlanoVO)cbPlano.getSelectedItem());
+		if (erros.length() != 0)
+			btErroPlano.setMensagem(ValidaApolice.validarPlano((PlanoVO)cbPlano.getSelectedItem()));
+		else {
+			isPJ = ((PlanoVO)cbPlano.getSelectedItem()).isEmpresarial();
+			if (isPJ){
+				erros += ValidaApolice.validaRazaoSocial(txtRazaoSocial.getText());
+				btErroRazaoSocial.setMensagem(ValidaApolice.validaRazaoSocial(txtRazaoSocial.getText()));
+
+				erros += ValidaApolice.validaCNPJ(txtCNPJ.getText());
+				btErroCNPJ.setMensagem(ValidaApolice.validaCNPJ(txtCNPJ.getText()));
+			}
+			else{
+				btErroRazaoSocial.setMensagem(null);
+				btErroCNPJ.setMensagem(null);
+			}
+			if (erros.length() > 0) barNotificacao.mostrarMensagem("Erro ao submeter os dados! A causa será exibida clicando no botão ao lado de cada campo!", BarraNotificacao.AVISO);
+			else{
+				btErroPlano.setMensagem(null);a
+				btErroRazaoSocial.setMensagem(null);
+				btErroCNPJ.setMensagem(null);
+		return false;
+	}*/
+	
+	private class EventoBotaoControle implements ActionListener{
+		@SuppressWarnings("static-access")
+		public void actionPerformed(ActionEvent e) {
+			
+			Component c = getPainelPrincipal();
+			if (e.getSource() == btCancelar){
+				try{
+					((ClienteMainPanel)c).getIframeColaborador().setVisible(false);
+				}
+				catch(ClassCastException cex){
+					cex.printStackTrace();
+				}
+			}else
+			if (e.getSource() == btSalvar)
+			{
+				ColaboradorVO novocolaborador = new ColaboradorVO();
+				novocolaborador.setDataCadastro(new Date());
+				novocolaborador.setLogin(txtLogin.getText());
+				novocolaborador.setMatricula(txtMatricula.getText());
+				novocolaborador.setNome(txtNome.getText());
+				novocolaborador.setSenha(new String(pwdSenha.getPassword()));
+				novocolaborador.setStatus(cbSituacao.getSelectedItem().toString());
+				novocolaborador.setTipoColaborador(rdAdmin.isSelected()? rdAdmin.getText() : rdFunc.getText());
+				
+				try {
+					if(colaborador != null){
+						novocolaborador.setId(colaborador.getId());
+						
+							Controller.getInstance().updateColaborador(novocolaborador);
+						
+						((ClienteMainPanel)c).mostrarMensagem("Alterações efetuadas com sucesso.",	barNotificacao.INFO);
+					}else
+					{
+						Controller.getInstance().insertColaborador(novocolaborador);
+						((ClienteMainPanel)c).mostrarMensagem("Cadastro efetuado com sucesso.",	barNotificacao.INFO);
+					}				
+					((ClienteMainPanel)c).carregarColaboradoressTable();
+					((ClienteMainPanel)c).getIframeColaborador().setVisible(false);
+				} catch (MensagemSaoDimasException e1) {
+					((ClienteMainPanel)c).mostrarMensagem(e1.getMessage(),	barNotificacao.INFO);
+					e1.printStackTrace();
+				}
+				
+			}
+
+		}
+	}
+}	

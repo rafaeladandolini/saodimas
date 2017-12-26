@@ -1,0 +1,61 @@
+package br.com.saodimas.view.components.iframe;
+
+import javax.swing.ImageIcon;
+import javax.swing.JInternalFrame;
+
+import br.com.saodimas.model.beans.CompraVO;
+import br.com.saodimas.model.beans.ProdutoCompraVO;
+import br.com.saodimas.view.components.panel.financeiro.compra.CompraPanel;
+import br.com.saodimas.view.util.WinManager;
+
+@SuppressWarnings("serial")
+public class CompraIFrame extends JInternalFrame {
+	private CompraPanel compraPanel;
+	
+	public CompraIFrame() {
+		super("Nova Compra", false, true, false);
+		initialize();
+	}
+	
+	public CompraIFrame(CompraVO compra) {
+		super("Editar Compra", false, true, false);
+		initialize();
+		compraPanel.setCompra(compra);
+	}
+	
+	public void adicionarProduto(ProdutoCompraVO produto) {
+			compraPanel.adicionaProduto(produto);
+	}
+	
+
+	public void setCompra(CompraVO compra) {
+		setTitle((compra == null)? "Nova Compra" : "Editar Compra");
+		compraPanel.setCompra(compra);
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		habilitarControles(!visible);
+		super.setVisible(visible);
+		if (visible) compraPanel.focoPadrao();
+	}
+	
+	public void habilitarControles(boolean enable){
+		if (enable && WinManager.getJanelaInicial() != null)
+			WinManager.getJanelaInicial().habilitarTudo();
+		if (!enable && WinManager.getJanelaInicial() != null)
+			WinManager.getJanelaInicial().desabilitarTudo();
+	}
+	
+	private void initialize(){
+		compraPanel = new CompraPanel();
+		
+		getContentPane().add(compraPanel);
+		setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
+		setIconifiable(true);
+		setFrameIcon(new ImageIcon("imagens/relacaoTitular.gif"));
+		setTitle((compraPanel.getCompraVO() == null)? "Nova Compra" : "Editar Compra");
+		setSize(500,500);
+	}
+
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;LastCareClient/ejbModule/br/com/saodimas/model/dao/impl/ProdutoOCompraDAOImpl.java&apos; to &apos;ProdutoCompraDAOImpl.java&apos;" description="Rename resource &apos;ProdutoOCompraDAOImpl.java&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="ejbModule/br/com/saodimas/model/dao/impl/ProdutoOCompraDAOImpl.java" name="ProdutoCompraDAOImpl.java" stamp="1342466584997" updateReferences="true"/>
+</session>
